@@ -5,12 +5,14 @@ import sys
 def p(p1,p2):
   print(p1 + '\t' + str(p2))
 
+# 10
 class ScpPointer:
   def __init__(self,reader):
     self.id = reader.readint(2)
     self.len = reader.readint(4)
     self.index  = reader.readint(4)
     
+# 16
 class ScpHeader:
   def __init__(self,reader):
     self.crc = reader.readint(2)
@@ -29,6 +31,9 @@ class ScpReader:
   def read(self,n):
     return self.file.read(n)
     
+  def pos(self):
+    return self.file.tell()
+    
   def readint(self,n):
     return int.from_bytes(self.file.read(n),'little')
       
@@ -44,23 +49,29 @@ class ScpReader:
     self.file.close()
 
 class Section0:
-  def __init__(self,scpReader):
-    self.reader = scpReader
-    self.pointers = 0
+  def __init__(self,reader):
+    self.header = ScpHeader(reader)
+    self.p = []
+    # fix pointers for 12 sections (1-12)
+    for i in range(1,12):
+      self.p.append(ScpPointer(reader))
+      
+    # additional section pointers
+    # each pointer 10 bytes
+    restlen = self.header.len - 120 - 16
+    if restlen > 0:
+      for i in range (1, restlen/10):
+        self.p.append(ScpPointer(reader))
     
-  def readAll(self):
-    self.header = ScpHeader(self.reader)
-    self.rest = self.reader.read(self.header.len - 16)
-    #self.pointers = 
+ 
     
 def read_scp(f):
-  scpReader = ScpReader(f)
+  scp = ScpReader(f)
   
-  p('CRC', scpReader.readint(2))
-  p('RecordLength' , scpReader.readint(4))
+  p('CRC', scp.readint(2))
+  p('RecordLength' , scp.readint(4))
   
-  s0 = Section0(scpReader)
-  s0.readAll()
+  s0 = Section0(scp)
   
   
   print()
@@ -72,9 +83,10 @@ def read_scp(f):
   p('S0 VerNr' , s0.header.versnr)
   p('S0 ProNr' , s0.header.protnr)
   p('S0 Res', s0.header.reserved)
+  p('S0 pointers', len(s0.p))
   print()
 
-  scpReader.close()
+  scp.close()
 
 def main():
   f = sys.argv[1]
