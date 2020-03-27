@@ -36,7 +36,11 @@ class ScpReader:
     
   def readint(self,n):
     return int.from_bytes(self.file.read(n),'little')
-      
+  
+  def move(self,n):
+    # move n bytes from beginning of file
+    self.file.seek(n,0)
+    
   def skip(self,n):
     pass
 
@@ -50,7 +54,7 @@ class ScpReader:
 
 class Section0:
   def __init__(self,reader):
-    self.header = ScpHeader(reader)
+    self.h = ScpHeader(reader)
     self.p = []
     # fix pointers for 12 sections (1-12)
     for i in range(1,12):
@@ -58,12 +62,17 @@ class Section0:
       
     # additional section pointers
     # each pointer 10 bytes
-    restlen = self.header.len - 120 - 16
+    # 12 pointers length = 120
+    restlen = self.h.len - 120 - 16
     if restlen > 0:
       for i in range (1, restlen/10):
         self.p.append(ScpPointer(reader))
-    
- 
+
+# patient data
+class Section1:
+  def __init__(self,pointer,reader):
+    reader.move(pointer.index - 1)
+    self.h = ScpHeader(reader)
     
 def read_scp(f):
   scp = ScpReader(f)
@@ -77,15 +86,22 @@ def read_scp(f):
   print()
 
   # section 0
-  p('S0 CRC', s0.header.crc)
-  p('S0 Id:' , s0.header.id)
-  p('S0 Len' , str(s0.header.len))
-  p('S0 VerNr' , s0.header.versnr)
-  p('S0 ProNr' , s0.header.protnr)
-  p('S0 Res', s0.header.reserved)
+  p('S0 CRC', s0.h.crc)
+  p('S0 Id:' , s0.h.id)
+  p('S0 Len' , str(s0.h.len))
+  p('S0 VerNr' , s0.h.versnr)
+  p('S0 ProNr' , s0.h.protnr)
+  p('S0 Res', s0.h.reserved)
   p('S0 pointers', len(s0.p))
   print()
-
+  
+  s1 = Section1(s0.p[1],scp)
+  p('S1 CRC', s1.h.crc)
+  p('S1 Id:' , s1.h.id)
+  p('S1 Len' , str(s1.h.len))
+  p('S1 VerNr' , s1.h.versnr)
+  p('S1 ProNr' , s1.h.protnr)
+  p('S1 Res', s1.h.reserved)
   scp.close()
 
 def main():
