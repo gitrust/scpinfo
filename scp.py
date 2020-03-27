@@ -21,6 +21,12 @@ class ScpHeader:
     self.versnr = reader.readint(1)
     self.protnr = reader.readint(1)
     self.reserved = reader.reads(6)
+
+class Tag:
+  def __init__(self,reader):
+    self.tag = reader.readint(1)
+    self.len = reader.readint(2)
+    self.data = reader.reads(self.len)
     
 class ScpReader:
   def __init__(self,filename):
@@ -72,7 +78,17 @@ class Section0:
 class Section1:
   def __init__(self,pointer,reader):
     reader.move(pointer.index - 1)
+    
     self.h = ScpHeader(reader)
+    self.t = []
+    datalen = self.h.len - 16
+    start = datalen
+    while (start > 0):      
+      tag = Tag(reader)
+      start = start - tag.len
+      self.t.append(tag)
+      
+    
     
 def read_scp(f):
   scp = ScpReader(f)
@@ -102,6 +118,7 @@ def read_scp(f):
   p('S1 VerNr' , s1.h.versnr)
   p('S1 ProNr' , s1.h.protnr)
   p('S1 Res', s1.h.reserved)
+  p('S1 Tags', len(s1.t))
   scp.close()
 
 def main():
