@@ -11,8 +11,16 @@ class Scp:
 class ScpPointer:
   def __init__(self,reader):
     self.id = reader.readint(2)
+    # section length
     self.len = reader.readint(4)
+    # index of section starting from zero
     self.index  = reader.readint(4)
+    
+  def __str__(self):
+    return '{0}({1})'.format(self.id,self.len)
+    
+  def section_has_data(self):
+    return self.len > 0
 
 class Section:
   def __init__(self, reader):
@@ -87,21 +95,24 @@ class Section0(Section):
     super().__init__(reader)
     self.p = []
     # fix pointers for 12 sections (1-12)
-    for i in range(1,12):
-      self.p.append(ScpPointer(reader))
+    for i in range(0,12):
+      pointer = ScpPointer(reader)
+      self.p.append(pointer)
       
     # additional section pointers
     # each pointer 10 bytes
     # 12 pointers length = 120
     restlen = self.h.len - 120 - 16
     if restlen > 0:
+      # FIXME check starting range
       for i in range (1, restlen/10):
-        self.p.append(ScpPointer(reader))
+        pointer = ScpPointer(reader)
+        self.p.append(pointer)
 
 # patient data
 class Section1(Section):
   def __init__(self,pointer,reader):
-    reader.move(pointer.index - 1)
+    reader.move(pointer.index - 1 )
     
     super().__init__(reader)
     self.t = []
@@ -145,16 +156,33 @@ class LeadIdentification:
 # lead identification
 class Section3(Section):
   def __init__(self,pointer,reader):
+    
     reader.move(pointer.index - 1)
     
     super().__init__(reader)
     self.nrleads = reader.readint(1)
     self.flags = reader.readint(1)
+    # first bit
+    self.ref_beat_substr = bool( self.flags >> 1 & 1 )
+    # bits 3-7
+    self.nr_leads_sim = self.flags >> 3 & 0b1111
     self.leads = []
     
     for i in range(0, self.nrleads):
         lead = LeadIdentification(reader)
         self.leads.append(lead)
+
+class Section5(Section):
+  def __init__(self,pointer,reader):
+    reader.move(pointer.index - 1)
+    
+    super().__init__(reader)
+    # avm in nanovolt
+    self.avm = reader.readint(2)
+    # sample time interval in ms
+    self.sample_time_interval = reader.readint(2)
+    self.sample_encoding = reader.readint(1)
+    self.reserved = reader.readint(1)
     
 # rythm data
 class Section6(Section):
