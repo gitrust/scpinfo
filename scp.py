@@ -6,6 +6,9 @@ class Scp:
   # bytes to int
   def b2i(self,bytes):
     return int.from_bytes(bytes,'little')
+    
+  def bdecode(self,bytes):
+    return bytes.decode('iso-8859-1')
 
 # 10
 class ScpPointer:
@@ -22,7 +25,7 @@ class ScpPointer:
   def section_has_data(self):
     return self.len > 0
 
-class Section:
+class Section(Scp):
   def __init__(self, reader):
     self.h = ScpHeader(reader)
   
@@ -102,6 +105,21 @@ class DateOfBirthFormat(Scp):
       
   def __str__(self):
     return self.text
+
+class TagMachineId(Scp):
+  def __init__(self,bytes):
+    if bytes:
+      instNr = self.b2i(bytes[0:2])
+      depNr = self.b2i(bytes[2:4])
+      devId = self.b2i(bytes[4:4])
+      devType = self.b2i(bytes[6:6])
+      model = self.bdecode(bytes[9:14])
+      self.text = '{0} / {1} / {2} / {3} / {4}'.format(instNr,depNr,devId,devType,model)
+    else:
+      self.text = ''
+  
+  def __str__(self):
+    return self.text
     
 class Tag:
   def __init__(self,reader):  
@@ -176,10 +194,10 @@ class Section1(Section):
       start = start - tag.len
       self.t.append(tag)
   
-  def format_tag_int(self,tag,bytecount):
+  def format_tag_int(self, tag, start, end):
     for _tag in self.t:
       if _tag.tag == tag:
-        return self.b2i(_tag.data[0:bytecount])
+        return self.b2i(_tag.data[start:end])
     return ''
         
   def format_tag(self,tag):
