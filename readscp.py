@@ -43,7 +43,7 @@ def read_scp(f):
   p('DateOfBirth',DateOfBirthFormat(s1.tag_data(5)).text)
   p('Drugs', s1.format_tag(10))
   p('DeviceId', s1.format_tag(14))
-  p('TExt', s1.format_tag(30))
+  p('Text', s1.format_tag(30))
   p('EcgSeq', s1.format_tag(31))
   p('MedHistory', s1.format_tag(35))
 
@@ -57,7 +57,7 @@ def read_scp(f):
   p('ProNr' , s3.h.protnr)
   p('Res', s3.h.reserved)
   p('LeadCount', len(s3.leads))
-  p('Lead Ids', ', '.join(str(i.leadid) for i in s3.leads))
+  p('Leads (Samples)', ', '.join(str(lead) for lead in s3.leads))
   
   print()
   p('--Section6--','----')

@@ -129,11 +129,18 @@ class Section1(Section):
         
     return None
 
+# in section3
 class LeadIdentification:
   def __init__(self,reader):
     self.startsample = reader.readint(4)
     self.endsample = reader.readint(4)
     self.leadid = reader.readint(1)
+  
+  def __str__(self):
+    return '{0} ({1})'.format(self.leadid,self.sample_count())
+    
+  def sample_count(self):
+    return self.endsample-self.startsample + 1
 
 # lead identification
 class Section3(Section):
