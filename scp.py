@@ -129,12 +129,25 @@ class Section1(Section):
         
     return None
 
+class LeadIdentification:
+  def __init__(self,reader):
+    self.startsample = reader.readint(4)
+    self.endsample = reader.readint(4)
+    self.leadid = reader.readint(1)
+
 # lead identification
 class Section3(Section):
   def __init__(self,pointer,reader):
     reader.move(pointer.index - 1)
     
     super().__init__(reader)
+    self.nrleads = reader.readint(1)
+    self.flags = reader.readint(1)
+    self.leads = []
+    
+    for i in range(0, self.nrleads):
+        lead = LeadIdentification(reader)
+        self.leads.append(lead)
     
 # rythm data
 class Section6(Section):

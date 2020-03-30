@@ -56,6 +56,8 @@ def read_scp(f):
   p('VerNr' , s3.h.versnr)
   p('ProNr' , s3.h.protnr)
   p('Res', s3.h.reserved)
+  p('LeadCount', len(s3.leads))
+  p('Lead Ids', ', '.join(str(i.leadid) for i in s3.leads))
   
   print()
   p('--Section6--','----')
