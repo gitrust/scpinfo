@@ -1,13 +1,11 @@
 
-import sys
-
-
-def p(p1,p2):
-  print(p1.ljust(15,' ') + '\t\t' + str(p2))
-
-# bytes to int
-def b2i(bytes):
-  return int.from_bytes(bytes,'little')
+class Scp:
+  def __init__(self):
+    pass
+  
+  # bytes to int
+  def b2i(self,bytes):
+    return int.from_bytes(bytes,'little')
 
 # 10
 class ScpPointer:
@@ -15,7 +13,11 @@ class ScpPointer:
     self.id = reader.readint(2)
     self.len = reader.readint(4)
     self.index  = reader.readint(4)
-    
+
+class Section:
+  def __init__(self, reader):
+    self.h = ScpHeader(reader)
+  
 # 16
 class ScpHeader:
   def __init__(self,reader):
@@ -26,17 +28,19 @@ class ScpHeader:
     self.protnr = reader.readint(1)
     self.reserved = reader.reads(6)
 
-class PatientAgeFormat:
+class PatientAgeFormat(Scp):
   def __init__(self,bytes):
+    super().__init__()
     if bytes and len(bytes) > 2:
-      self.text = b2i(bytes[0:2])
+      self.text = self.b2i(bytes[0:2])
     else:
       self.text = ''
       
-class DateOfBirthFormat:
+class DateOfBirthFormat(Scp):
   def __init__(self,bytes):
+    super().__init__()
     if bytes and len(bytes) > 2:
-      self.text = '{0}/{1}/{2}'.format(b2i(bytes[0:2]),b2i(bytes[2:3]),b2i(bytes[3:4]))
+      self.text = '{0}/{1}/{2}'.format(self.b2i(bytes[0:2]),self.b2i(bytes[2:3]),self.b2i(bytes[3:4]))
     else:
       self.text = ''
     
@@ -78,9 +82,9 @@ class ScpReader:
   def close(self):
     self.file.close()
 
-class Section0:
+class Section0(Section):
   def __init__(self,reader):
-    self.h = ScpHeader(reader)
+    super().__init__(reader)
     self.p = []
     # fix pointers for 12 sections (1-12)
     for i in range(1,12):
@@ -95,11 +99,11 @@ class Section0:
         self.p.append(ScpPointer(reader))
 
 # patient data
-class Section1:
+class Section1(Section):
   def __init__(self,pointer,reader):
     reader.move(pointer.index - 1)
     
-    self.h = ScpHeader(reader)
+    super().__init__(reader)
     self.t = []
     datalen = self.h.len - 16
     start = datalen
@@ -126,88 +130,16 @@ class Section1:
     return None
 
 # lead identification
-class Section3:
+class Section3(Section):
   def __init__(self,pointer,reader):
     reader.move(pointer.index - 1)
     
-    self.h = ScpHeader(reader)
+    super().__init__(reader)
     
 # rythm data
-class Section6:
+class Section6(Section):
   def __init__(self,pointer,reader):
     reader.move(pointer.index - 1)
     
-    self.h = ScpHeader(reader)    
-    
-def read_scp(f):
-  scp = ScpReader(f)
-  
-  p('--ScpRec--','----')
-  p('CRC', scp.readint(2))
-  p('RecLen' , scp.readint(4))
-  
-  print()
+    super().__init__(reader)    
 
-  # section 0
-  s0 = Section0(scp)
-  p('--Section0--','----')
-  p('CRC', s0.h.crc)
-  p('Id:' , s0.h.id)
-  p('Len' , str(s0.h.len))
-  p('VerNr' , s0.h.versnr)
-  p('ProNr' , s0.h.protnr)
-  p('Res', s0.h.reserved)
-  p('pointers', len(s0.p))
-  print()
-  
-  p('--Section1--','----')
-  s1 = Section1(s0.p[1],scp)
-  p('CRC', s1.h.crc)
-  p('Id:' , s1.h.id)
-  p('Len' , str(s1.h.len))
-  p('VerNr' , s1.h.versnr)
-  p('ProNr' , s1.h.protnr)
-  p('Res', s1.h.reserved)
-  p('Tags', len(s1.t))  
-  p('FirstName', s1.format_tag(1))
-  p('LastName', s1.format_tag(0))
-  p('Pat Id', s1.format_tag(2))
-  p('LastName(2)', s1.format_tag(3))
-  p('Age', s1.format_tag(4))
-  p('DateOfBirth',DateOfBirthFormat(s1.tag_data(5)).text)
-  p('Drugs', s1.format_tag(10))
-  p('DeviceId', s1.format_tag(14))
-  p('TExt', s1.format_tag(30))
-  p('EcgSeq', s1.format_tag(31))
-  p('MedHistory', s1.format_tag(35))
-
-  print()
-  p('--Section3--','----')
-  s3 = Section3(s0.p[3],scp)
-  p('CRC', s3.h.crc)
-  p('Id:' , s3.h.id)
-  p('Len' , str(s3.h.len))
-  p('VerNr' , s3.h.versnr)
-  p('ProNr' , s3.h.protnr)
-  p('Res', s3.h.reserved)
-  
-  print()
-  p('--Section6--','----')
-  s6 = Section6(s0.p[6],scp)
-  p('CRC', s6.h.crc)
-  p('Id:' , s6.h.id)
-  p('Len' , str(s6.h.len))
-  p('VerNr' , s6.h.versnr)
-  p('ProNr' , s6.h.protnr)
-  p('Res', s6.h.reserved)
-  scp.close()
-
-
-
-  
-def main():
-  f = sys.argv[1]
-  
-  read_scp(f)
-
-if __name__ == "__main__": main()
