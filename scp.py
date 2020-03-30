@@ -36,6 +36,50 @@ class ScpHeader:
     self.protnr = reader.readint(1)
     self.reserved = reader.reads(6)
 
+# tag 8
+class PatientSexFormat(Scp):
+  def __init__(self,bytes):
+    super().__init__()
+        
+    self.lookup = {
+      0 : 'Not Known',
+      1 : 'Male',
+      2 : 'Female',
+      9 : 'Unspecified'
+    }
+    
+    # 1 byte
+    if bytes:
+      value = self.b2i(bytes)
+      self.text =  self.lookup[value]
+    else:
+      self.text = ''
+      
+  def __str__(self):
+    return self.text
+ 
+# tag 9
+class PatientRaceFormat(Scp):
+  def __init__(self,bytes):
+    super().__init__()
+
+    self.lookup = {
+      0 : 'Unspecified',
+      1 : 'Caucasian',
+      2 : 'Black',
+      3 : 'Oriental'
+    }
+    
+        # 1 byte
+    if bytes:
+      value = self.b2i(bytes)
+      self.text =  self.lookup[value]
+    else:
+      self.text = ''
+    
+  def __str__(self):
+    return self.text 
+    
 class PatientAgeFormat(Scp):
   def __init__(self,bytes):
     super().__init__()
@@ -44,6 +88,10 @@ class PatientAgeFormat(Scp):
     else:
       self.text = ''
       
+  def __str__(self):
+    return self.text
+
+# tag 5
 class DateOfBirthFormat(Scp):
   def __init__(self,bytes):
     super().__init__()
@@ -51,6 +99,9 @@ class DateOfBirthFormat(Scp):
       self.text = '{0}/{1}/{2}'.format(self.b2i(bytes[0:2]),self.b2i(bytes[2:3]),self.b2i(bytes[3:4]))
     else:
       self.text = ''
+      
+  def __str__(self):
+    return self.text
     
 class Tag:
   def __init__(self,reader):  
@@ -125,6 +176,12 @@ class Section1(Section):
       start = start - tag.len
       self.t.append(tag)
   
+  def format_tag_int(self,tag,bytecount):
+    for _tag in self.t:
+      if _tag.tag == tag:
+        return self.b2i(_tag.data[0:bytecount])
+    return ''
+        
   def format_tag(self,tag):
     for _tag in self.t:
       if _tag.tag == tag:
