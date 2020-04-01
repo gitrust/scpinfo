@@ -1,6 +1,6 @@
 # Description
 
-A python command line tool to read an ECG SCP file and print structure information
+A python command line tool to read an ECG SCP (https://en.wikipedia.org/wiki/SCP-ECG) file and print structure information about ECG traces and metadata
 
 # SCP Support
 
