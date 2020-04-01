@@ -51,6 +51,24 @@ class Section1TagsFormatter:
     printer.p('Text', self.format_tag(30))
     printer.p('Ecg Seq.', self.format_tag(31))
     printer.p('Med. History', self.format_tag(35))
+
+# Lead Format
+class LeadIdFormatter:
+  def __init__(self,leads):
+    self.leads = leads
+    self.leadnames = file2dict('leadtable.csv')
+    
+  def _leadname(self,key):
+    name = self.leadnames[key]
+    if name:
+      return name
+    return str(key)
+    
+  def format(self,printer):
+    s = ', '.join(self._leadname(lead.leadid) for lead in self.leads)
+    printer.p('Leads',s)
+    s2 = ', '.join('{0} ({1})'.format(self._leadname(lead.leadid), lead.sample_count()) for lead in self.leads)
+    printer.p('SampleCount', s2)
     
 # tag 9
 class PatientRaceFormatter:
@@ -79,6 +97,7 @@ class PatientRaceFormatter:
     
 class PatientAgeFormatter:
   def __init__(self, bytes):
+    self.value = ''
     if bytes and len(bytes) > 2:
       self.value = b2i(bytes[0:2])
     
@@ -214,7 +233,8 @@ def format_section3(s3,printer):
   printer.p('RefBeatSet', s3.ref_beat_substr)
   printer.p('Sim-rec Leads', s3.nr_leads_sim)
   printer.p('LeadCount', len(s3.leads))
-  printer.p('Leads (Samples)', ', '.join(str(lead) for lead in s3.leads))
+  LeadIdFormatter(s3.leads).format(printer)
+  #printer.p('Leads (Samples)', ', '.join(str(lead) for lead in s3.leads))
 
 def format_section5(s5,printer):
   if not s5.p.section_has_data():

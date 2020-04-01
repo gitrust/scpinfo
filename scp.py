@@ -41,7 +41,9 @@ class SectionHeader:
     # section id number
     self.id  = 0
     self.len = 0
+    # section version number 
     self.versnr = 0
+    # protocol version number
     self.protnr = 0
     self.reserved = None
     
@@ -58,8 +60,11 @@ class Section0(Section):
     self.p = []
 
   def has_section(self,idx):
-    return len(self.p) >= idx + 1 and self.p[idx].len > 0
-    
+    p = self.pointer_for_section(idx)
+    if p is None:
+      return False
+    return p.len > 0
+  
   def pointer_for_section(self, section_id):
     for p in self.p:
       if p.id == section_id:
