@@ -59,6 +59,7 @@ class Section1TagsFormatter:
     FilterBitMapFormatter(self.tag_data(29)).format(printer)
     printer.p('Text', self.format_tag(30))
     printer.p('Ecg Seq.', self.format_tag(31))
+    ElectrodeConfigFormatter(self.tag_data(33)).format(printer)
     printer.p('Med. History', self.format_tag(35))
 
 # Lead Format
@@ -78,12 +79,20 @@ class LeadIdFormatter:
     printer.p('Leads',s)
     s2 = ', '.join('{0} ({1})'.format(self._leadname(lead.leadid), lead.sample_count()) for lead in self.leads)
     printer.p('SampleCount', s2)
+
+# tag 33
+class ElectrodeConfigFormatter:
+  def __init__(self,bytes):
+    if bytes and len(bytes) > 1:
+      self.value1 = b2i(bytes[0:1])
+      self.value2 = b2i(bytes[1:2])
+  
+  def format(self, printer):
+    printer.p('Electrode Config.', '{0}/{1}'.format(self.value1,self.value2))
     
 # tag 9
 class PatientRaceFormatter:
   def __init__(self,bytes):
-    super().__init__()
-
     self.lookup = {
       0 : 'Unspecified',
       1 : 'Caucasian',
