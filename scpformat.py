@@ -292,26 +292,42 @@ def format_section5(s5,printer):
   if not s5.p.section_has_data():
     return
     
+  enc_table = {
+    0 : 'Real',
+    1 : 'First difference',
+    2 : 'Second difference'
+  }
+  
   print()
   printer.p('--Section5--','----')
   format_header(s5.h,printer)
   printer.p('AVM (nV)', s5.avm)
-  printer.p('SampleTime (ms)', s5.sample_time_interval)
-  printer.p('Sample Enc',  s5.sample_encoding)
+  printer.p('SampleTime (µs)', s5.sample_time_interval)
+  printer.p('Sample Encoding',  enc_table[s5.sample_encoding])
 
 def format_section6(s6,printer): 
   if not s6.p.section_has_data():
     return
-    
+  
+  enc_table = {
+    0 : 'Real',
+    1 : 'First difference',
+    2 : 'Second difference'
+  }
+  
   print()
   printer.p('--Section6--','----')
   format_header(s6.h,printer)
+  printer.p('AVM (nV)', s6.avm)
+  printer.p('SampleTime (µs)', s6.sample_time_interval)
+  printer.p('Sample Encoding', enc_table[s6.sample_encoding])
+  printer.p('Bimodal compression', s6.bimodal_compression == 1)
 
 def format_header(h,printer):
-  printer.p('--Header--','----')
+  printer.p('--SectionHeader--','----')
   printer.p('CRC', h.crc)
   printer.p('Id:' , h.id)
-  printer.p('Len' , h.len)
-  printer.p('VerNr' , h.versnr)
-  printer.p('ProNr' , h.protnr)
+  printer.p('Length' , h.len)
+  printer.p('VersionNr' , h.versnr)
+  printer.p('ProtocolNr' , h.protnr)
   printer.p('','----')

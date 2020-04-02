@@ -176,4 +176,9 @@ class ScpReader:
     header = self._sectionheader()
     s = Section6(header, pointer)
     
+    s.avm = self.reader.readint(2)
+    s.sample_time_interval = self.reader.readint(2)
+    s.sample_encoding = self.reader.readint(1)
+    s.bimodal_compression = self.reader.readint(1)
+    
     return s

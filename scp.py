@@ -114,6 +114,7 @@ class Section5(Section):
     self.avm = 0
     # sample time interval in ms
     self.sample_time_interval = 0
+    # 0,1,2
     self.sample_encoding = 0
     self.reserved = 0
     
@@ -121,4 +122,11 @@ class Section5(Section):
 class Section6(Section):
   def __init__(self,header,pointer):
     super().__init__(header)
-    self.p = pointer    
+    self.p = pointer
+    # Amplitude Value Multiplier in nanovolt
+    self.avm = 0
+    self.sample_time_interval = 0
+    # 0,1,2
+    self.sample_encoding = 0
+    # rythm data compression
+    self.bimodal_compression = 0
