@@ -39,15 +39,24 @@ class Section1TagsFormatter:
     DateOfBirthFormatter(self.tag_data(5)).format(printer)
     PatientSexFormatter(self.tag_data(8)).format(printer)
     PatientRaceFormatter(self.tag_data(9)).format(printer)
-    #p('Drugs', self.format_tag(10))
+    DrugsFormatter(self.tag_data(10)).format(printer)
     printer.p('Sys (mmHg)', self.format_tag_int(11,0,2))
     printer.p('Dia (mmHg)', self.format_tag_int(12,0,2))
     TagMachineId(self.tag_data(14)).format(printer)
-    printer.p('Acq.Institution', self.format_tag(15))
+    printer.p('Acq. Institution Desc', self.format_tag(16))
+    printer.p('Acq. Institution Desc', self.format_tag(17))
+    printer.p('Acq. Department Desc', self.format_tag(18))
+    printer.p('Anal. Department Desc', self.format_tag(19))
+    printer.p('Referring Physician', self.format_tag(20))
+    printer.p('Latest Confirm. Phys', self.format_tag(21))
+    printer.p('Technician Physician', self.format_tag(22))
+    printer.p('Room Description', self.format_tag(23))
+    printer.p('Stat Code', self.format_tag(24))
     DateOfAcquisitionFormatter(self.tag_data(25)).format(printer)
     TimeOfAcquisitionFormatter(self.tag_data(26)).format(printer)
     printer.p('Baseline Filter', self.format_tag_int(27,0,2))
     printer.p('LowPass Filter', self.format_tag_int(28,0,2))
+    FilterBitMapFormatter(self.tag_data(29)).format(printer)
     printer.p('Text', self.format_tag(30))
     printer.p('Ecg Seq.', self.format_tag(31))
     printer.p('Med. History', self.format_tag(35))
@@ -94,7 +103,39 @@ class PatientRaceFormatter:
     
   def format(self,printer):
     printer.p('Race',self.text)
+
+# tag 29
+class FilterBitMapFormatter:
+  def __init__(self, bytes):
+    self.value = ''
     
+    self.lookup = {
+      0 : '60Hz notch filter',
+      1 : '50Hz notch filter',
+      2 : 'Artifact filter',
+      3 : 'Basefilter filter'
+    }
+    
+    if bytes:
+      v = b2i(bytes)
+      if v in self.lookup:
+        self.value = self.lookup[v]
+      else:
+        self.value = v
+      
+  
+  def format(self,printer):
+    printer.p('Other Filters', self.value)
+    
+class DrugsFormatter:
+  def __init__(self,bytes):
+    self.value = ''
+    if bytes and len(bytes) > 4:
+      self.value = bdecode(bytes[4:])
+  
+  def format(self,printer):
+    printer.p('Drugs', self.value)
+      
 class PatientAgeFormatter:
   def __init__(self, bytes):
     self.value = ''
@@ -142,13 +183,15 @@ class PatientSexFormatter:
       2 : 'Female',
       9 : 'Unspecified'
     }
+    self.text = ''
     
-    # 1 byte
     if bytes:
-      value = b2i(bytes)
-      self.text =  self.lookup[value]
-    else:
-      self.text = ''
+      key = b2i(bytes)
+      if key in self.lookup:
+        self.text =  self.lookup[key]
+      else:
+        self.text = key
+    
       
   def __str__(self):
     return self.text
@@ -184,7 +227,7 @@ class TagMachineId:
     return '--'
     
   def format(self,printer):
-    printer.p('MachineID','----')
+    printer.p('Acq. Device MachineID','----')
     printer.p('InstNr', self.instNr)
     printer.p('DepNr',self.depNr)
     printer.p('DevId',self.devId)
