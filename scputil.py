@@ -23,4 +23,4 @@ class ScpPrinter:
   
   
   def p(self,p1, p2):
-    print(p1.ljust(15,' ') + '\t\t' + str(p2))
+    print('{0} {1}'.format(str(p1).ljust(30),p2))
