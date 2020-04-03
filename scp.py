@@ -59,7 +59,7 @@ class SectionHeader:
     self.reserved = None
     
 class Tag:
-  def __init__(self):  
+  def __init__(self):
     self.tag = 0
     self.len = 0
     self.data = None 
@@ -88,7 +88,8 @@ class Section1(Section):
   def __init__(self,header,pointer):
     super().__init__(header)
     self.p = pointer
-    self.tags = []    
+    # tags 10,13,30,32,35 may exist multiple times
+    self.tags = []
     self.datalen = 0
 
 # Huffman tables

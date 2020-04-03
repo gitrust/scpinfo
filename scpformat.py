@@ -22,10 +22,17 @@ class Section1TagsFormatter:
         return _tag.data.decode('iso-8859-1')
     return ''
   
-    
-  def tag_data(self,idx):
+  # multiple tags
+  def tag_list(self, tag_id):
+    mytags = []
     for _tag in self.tags:
-      if _tag.tag == idx:
+      if _tag.tag == tag_id:
+        mytags.append(_tag.tag)
+    return mytags
+    
+  def tag_data(self,tag_id):
+    for _tag in self.tags:
+      if _tag.tag == tag_id:
         return _tag.data
         
     return None
@@ -39,7 +46,8 @@ class Section1TagsFormatter:
     DateOfBirthFormatter(self.tag_data(5)).format(printer)
     PatientSexFormatter(self.tag_data(8)).format(printer)
     PatientRaceFormatter(self.tag_data(9)).format(printer)
-    DrugsFormatter(self.tag_data(10)).format(printer)
+    for t in self.tag_list(10):
+      DrugsFormatter(t.data).format(printer)
     printer.p('Sys (mmHg)', self.format_tag_int(11,0,2))
     printer.p('Dia (mmHg)', self.format_tag_int(12,0,2))
     TagMachineId(self.tag_data(14)).format(printer)
@@ -57,11 +65,13 @@ class Section1TagsFormatter:
     printer.p('Baseline Filter', self.format_tag_int(27,0,2))
     printer.p('LowPass Filter', self.format_tag_int(28,0,2))
     FilterBitMapFormatter(self.tag_data(29)).format(printer)
-    printer.p('Text', self.format_tag(30))
+    for t in self.tag_list(30):
+      printer.p('Text', bdecode(t.data))
     printer.p('Ecg Seq.', self.format_tag(31))
     ElectrodeConfigFormatter(self.tag_data(33)).format(printer)
     DateTimeZoneFormatter(self.tag_data(34)).format(printer)
-    printer.p('Med. History', self.format_tag(35))
+    for t in self.tag_list(35):
+      printer.p('Med. History', bdecode(t.data))
 
 # Lead Format
 class LeadIdFormatter:
