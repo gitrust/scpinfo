@@ -9,10 +9,21 @@ class ScpRecord:
     self.sections = []
 
   def has_section(self, section_id):
+    return self.section(section_id) is not None
+  
+  def section(self, section_id):
     for s in self.sections:
       if s.h.id == section_id:
-        return True
-    return False
+        return s
+    return None
+    
+  
+  def number_of_leads(self):
+    s3 = self.section(3)
+    if s3:
+      return len(s3.leads)
+    return 0
+      
     
 # 10
 class SectionPointer:
@@ -71,6 +82,7 @@ class Section0(Section):
         return p
     return None
     
+    
 # patient data
 class Section1(Section):
   def __init__(self,header,pointer):
@@ -105,6 +117,11 @@ class Section3(Section):
     self.nr_leads_sim = 0
     self.leads = []
 
+# Section5 ref. beat samples
+# Section6 samples
+class DataSamples:
+  def __init__(self):
+    self.samples = []
 
 class Section5(Section):
   def __init__(self,header,pointer):
@@ -118,6 +135,12 @@ class Section5(Section):
     self.sample_encoding = 0
     self.reserved = 0
     
+    # number of bytes for encoded leads
+    # in the same order as the leads are stored
+    # lead order comes from section3
+    self.nr_bytes_for_leads = []
+    self.data = []
+    
 # rythm data
 class Section6(Section):
   def __init__(self,header,pointer):
@@ -130,3 +153,9 @@ class Section6(Section):
     self.sample_encoding = 0
     # rythm data compression
     self.bimodal_compression = 0
+    
+    # number of bytes for encoded leads
+    # in the same order as the leads are stored
+    # lead order comes from section3
+    self.nr_bytes_for_leads = []
+    self.data = []

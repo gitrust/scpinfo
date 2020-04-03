@@ -52,7 +52,7 @@ class ScpReader:
     # available section ids
     for sid in [1,3,5,6]:
       if s0.has_section(sid):
-        s = self._section(s0.pointer_for_section(sid))
+        s = self._section(s0.pointer_for_section(sid), scpRecord.number_of_leads())
         scpRecord.sections.append(s)
     return scpRecord
 
@@ -112,15 +112,15 @@ class ScpReader:
     leadid.leadid = self.reader.readint(1)
     return leadid
 
-  def _section(self, pointer):
+  def _section(self, pointer, nr_of_leads):
     if pointer.id == 1:
       return self._section1(pointer)
     elif pointer.id == 3:
       return self._section3(pointer)
     elif pointer.id == 5:
-      return self._section5(pointer)
+      return self._section5(pointer,nr_of_leads)
     elif pointer.id == 6:
-      return self._section6(pointer)
+      return self._section6(pointer, nr_of_leads)
     return None
     
   def _section1(self, pointer):
@@ -157,7 +157,7 @@ class ScpReader:
         s.leads.append(lead)
     return s
     
-  def _section5(self, pointer):
+  def _section5(self, pointer, nr_of_leads):
     self.reader.move(pointer.index - 1)
   
     header = self._sectionheader()
@@ -168,9 +168,27 @@ class ScpReader:
     s.sample_encoding = self.reader.readint(1)
     s.reserved = self.reader.readint(1)
     
+    # nr of bytes for each lead
+    for i in range(0, nr_of_leads):
+      s.nr_bytes_for_leads.append(self.reader.readint(2))
+    
+    # samples for each lead
+    for nr in s.nr_bytes_for_leads:
+      data = DataSamples()
+      # ref. beat samples are store as 2byte signed ints
+      # if section2 is not provided
+      samples_len = nr / 2
+      
+      while samples_len > 0:
+        data.samples.append(self.reader.readint(2))
+        samples_len = samples_len - 1
+      
+      s.data.append(data)
+    
+    
     return s
     
-  def _section6(self,pointer):
+  def _section6(self,pointer, nr_of_leads):
     self.reader.move(pointer.index - 1 )
   
     header = self._sectionheader()
@@ -181,4 +199,20 @@ class ScpReader:
     s.sample_encoding = self.reader.readint(1)
     s.bimodal_compression = self.reader.readint(1)
     
+    # nr of bytes for each lead
+    for i in range(0, nr_of_leads):
+      s.nr_bytes_for_leads.append(self.reader.readint(2))
+    
+    # samples for each lead
+    for nr in s.nr_bytes_for_leads:
+      data = DataSamples()
+      # samples are store as 2byte signed ints
+      # if section2 is not provided
+      samples_len = nr / 2
+      
+      while samples_len > 0:
+        data.samples.append(self.reader.readint(2))
+        samples_len = samples_len - 1
+      
+      s.data.append(data)
     return s

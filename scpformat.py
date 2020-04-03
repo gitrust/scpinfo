@@ -304,6 +304,7 @@ def format_section5(s5,printer):
   printer.p('AVM (nV)', s5.avm)
   printer.p('SampleTime (µs)', s5.sample_time_interval)
   printer.p('Sample Encoding',  enc_table[s5.sample_encoding])
+  printer.p('RefBeat 0, Bytes', ', '.join(str(nr) for nr in s5.nr_bytes_for_leads))
 
 def format_section6(s6,printer): 
   if not s6.p.section_has_data():
@@ -322,6 +323,7 @@ def format_section6(s6,printer):
   printer.p('SampleTime (µs)', s6.sample_time_interval)
   printer.p('Sample Encoding', enc_table[s6.sample_encoding])
   printer.p('Bimodal compression', s6.bimodal_compression == 1)
+  printer.p('Lead Samples, Bytes', ', '.join(str(nr) for nr in s6.nr_bytes_for_leads))
 
 def format_header(h,printer):
   printer.p('--SectionHeader--','----')
