@@ -12,8 +12,8 @@ def file2dict(file):
   d = {}
   with open(file) as f:
     for line in f:
-       (key, val) = line.split()
-       d[int(key)] = val
+       (key, val) = line.split(',')
+       d[int(key.strip())] = val.strip()
   return d
 
 
