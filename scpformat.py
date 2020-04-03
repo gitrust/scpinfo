@@ -60,6 +60,7 @@ class Section1TagsFormatter:
     printer.p('Text', self.format_tag(30))
     printer.p('Ecg Seq.', self.format_tag(31))
     ElectrodeConfigFormatter(self.tag_data(33)).format(printer)
+    DateTimeZoneFormatter(self.tag_data(34)).format(printer)
     printer.p('Med. History', self.format_tag(35))
 
 # Lead Format
@@ -83,13 +84,31 @@ class LeadIdFormatter:
 # tag 33
 class ElectrodeConfigFormatter:
   def __init__(self,bytes):
+    self._print = False
     if bytes and len(bytes) > 1:
       self.value1 = b2i(bytes[0:1])
       self.value2 = b2i(bytes[1:2])
+      self._print = True
   
   def format(self, printer):
-    printer.p('Electrode Config.', '{0}/{1}'.format(self.value1,self.value2))
-    
+    if self._print:
+      printer.p('Electrode Config.', '{0}/{1}'.format(self.value1,self.value2))
+ 
+# tag 34
+class DateTimeZoneFormatter:
+  def __init__(self,bytes):
+    self._print = False
+    if bytes:
+      # in minutes
+      self.offset = b2i(bytes[0:2])
+      self.index  = b2i(bytes[2:4])
+      self.desc = bdecode(bytes[4:])
+      self._print = True
+  
+  def format(self, printer):
+    if self._print:
+      printer.p('TimeZone', 'Offset:{0}m, Idx:{1}, Desc:{2}'.format(self.offset,self.index,self.desc))
+  
 # tag 9
 class PatientRaceFormatter:
   def __init__(self,bytes):
