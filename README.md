@@ -8,9 +8,11 @@ Currently following SCP section can be read with this tool
 
 - Section0
 - Section1
+- Section2 (partly)
 - Section3
 - Section5 (partly)
 - Section6 (partly)
+- Section7 (partly)
 
 # Command line usage
 

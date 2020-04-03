@@ -268,12 +268,16 @@ def format_section(s, printer):
     format_section0(s,printer)
   elif s.h.id == 1:
     format_section1(s,printer)
+  elif s.h.id == 2:
+    format_section2(s,printer)
   elif s.h.id == 3:
     format_section3(s,printer)
   elif s.h.id == 5:
     format_section5(s,printer)
   elif s.h.id == 6:
     format_section6(s,printer)
+  elif s.h.id == 7:
+    format_section7(s,printer)
 
 def format_section0(s0,printer):
   # section 0
@@ -293,7 +297,14 @@ def format_section1(s1,printer):
   printer.p('Tags', len(s1.tags))
   Section1TagsFormatter(s1.tags).format(printer) 
  
-
+def format_section2(s2,printer):
+  if not s2.p.section_has_data():
+    return
+    
+  print()
+  printer.p('--Section2--','----')
+  format_header(s2.h,printer)
+  
 def format_section3(s3,printer):
   if not s3.p.section_has_data():
     return
@@ -344,6 +355,14 @@ def format_section6(s6,printer):
   printer.p('Bimodal compression', s6.bimodal_compression == 1)
   printer.p('Lead Samples, Bytes', ', '.join(str(nr) for nr in s6.nr_bytes_for_leads))
 
+def format_section7(s7,printer):
+  if not s7.p.section_has_data():
+    return
+  
+  print()
+  printer.p('--Section7--','----')
+  format_header(s7.h,printer)
+  
 def format_header(h,printer):
   printer.p('--SectionHeader--','----')
   printer.p('CRC', h.crc)

@@ -50,7 +50,7 @@ class ScpReader:
     scpRecord.sections.append(s0)
     
     # available section ids
-    for sid in [1,3,5,6]:
+    for sid in [1,2,3,5,6,7]:
       if s0.has_section(sid):
         s = self._section(s0.pointer_for_section(sid), scpRecord.number_of_leads())
         scpRecord.sections.append(s)
@@ -115,12 +115,16 @@ class ScpReader:
   def _section(self, pointer, nr_of_leads):
     if pointer.id == 1:
       return self._section1(pointer)
+    if pointer.id == 2:
+      return self._section2(pointer)
     elif pointer.id == 3:
       return self._section3(pointer)
     elif pointer.id == 5:
       return self._section5(pointer,nr_of_leads)
     elif pointer.id == 6:
       return self._section6(pointer, nr_of_leads)
+    elif pointer.id == 7:
+      return self._section7(pointer)
     return None
     
   def _section1(self, pointer):
@@ -136,6 +140,13 @@ class ScpReader:
       tag = self._readtag()
       start = start - tag.len
       s.tags.append(tag)
+    return s
+
+  def  _section2(self, pointer):
+    self.reader.move(pointer.index - 1 )
+  
+    header = self._sectionheader()
+    s = Section2(header, pointer)
     return s
     
   def  _section3(self, pointer):
@@ -215,4 +226,12 @@ class ScpReader:
         samples_len = samples_len - 1
       
       s.data.append(data)
+    return s
+  
+  def _section7(self,pointer):
+    self.reader.move(pointer.index - 1 )
+  
+    header = self._sectionheader()
+    s = Section7(header, pointer)
+    
     return s

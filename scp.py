@@ -91,6 +91,12 @@ class Section1(Section):
     self.tags = []    
     self.datalen = 0
 
+# Huffman tables
+class Section2(Section):
+  def __init__(self,header,pointer):
+    super().__init__(header)
+    self.p = pointer
+    
 # in section3
 class LeadIdentification:
   def __init__(self):
@@ -159,3 +165,9 @@ class Section6(Section):
     # lead order comes from section3
     self.nr_bytes_for_leads = []
     self.data = []
+    
+# Global Measurements
+class Section7(Section):
+  def __init__(self,header,pointer):
+    super().__init__(header)
+    self.p = pointer
