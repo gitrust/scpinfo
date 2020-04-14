@@ -13,13 +13,17 @@ class Section1TagsFormatter:
       if _tag.tag == tag:
         return b2i(_tag.data[start:end])
     return ''
-        
+    
+  def get_tag(self, id):
+    for _tag in self.tags:
+      if _tag.tag == id:
+        return _tag
+    return None
+    
   def format_tag(self,tag):
     for _tag in self.tags:
       if _tag.tag == tag:
-        if tag == 4:
-          return _tag.data[0:2].decode('iso-8859-1')
-        return _tag.data.decode('iso-8859-1')
+        return bdecode(_tag.data)
     return ''
   
   # multiple tags
@@ -400,4 +404,5 @@ def format_header(h,printer):
   printer.p('Length' , h.len)
   printer.p('VersionNr' , h.versnr)
   printer.p('ProtocolNr' , h.protnr)
-  printer.p('','----')
+  printer.p('Reserved', h.reserved)
+  printer.p('----','----')
