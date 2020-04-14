@@ -49,11 +49,18 @@ class ScpReader:
     s0 = self._section0()
     scpRecord.sections.append(s0)
     
-    # available section ids
-    for sid in [1,2,3,5,6,7]:
+    # available section ids (1-11)
+    for sid in range(1,12):
       if s0.has_section(sid):
         s = self._section(s0.pointer_for_section(sid), scpRecord.number_of_leads())
-        scpRecord.sections.append(s)
+        if s is None:
+          print("ERROR: Section " + str(sid) + " pointer is corrupt")
+          continue
+        elif s.h.len == 0:
+          print("ERROR: Section " + str(sid) + " is header is corrupt")
+          continue
+        else:
+          scpRecord.sections.append(s)
     return scpRecord
 
   
@@ -80,7 +87,7 @@ class ScpReader:
     h = self._sectionheader()
     s = Section0(h)    
     s.p = []
-    # fix pointers for 12 sections (1-12)
+    # fix pointers for 12 sections (0-11)
     for i in range(0,12):
       pointer = self._sectionpointer()
       s.p.append(pointer)
@@ -119,12 +126,16 @@ class ScpReader:
       return self._section2(pointer)
     elif pointer.id == 3:
       return self._section3(pointer)
+    elif pointer.id == 4:
+      return self._section4(pointer)
     elif pointer.id == 5:
       return self._section5(pointer,nr_of_leads)
     elif pointer.id == 6:
       return self._section6(pointer, nr_of_leads)
     elif pointer.id == 7:
       return self._section7(pointer)
+    elif pointer.id == 8:
+      return self._section8(pointer)
     return None
     
   def _section1(self, pointer):
@@ -233,5 +244,21 @@ class ScpReader:
   
     header = self._sectionheader()
     s = Section7(header, pointer)
+    
+    return s
+    
+  def _section4(self,pointer):
+    self.reader.move(pointer.index - 1 )
+  
+    header = self._sectionheader()
+    s = Section4(header, pointer)
+    
+    return s
+    
+  def _section8(self,pointer):
+    self.reader.move(pointer.index - 1 )
+  
+    header = self._sectionheader()
+    s = Section8(header, pointer)
     
     return s

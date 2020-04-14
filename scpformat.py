@@ -27,7 +27,7 @@ class Section1TagsFormatter:
     mytags = []
     for _tag in self.tags:
       if _tag.tag == tag_id:
-        mytags.append(_tag.tag)
+        mytags.append(_tag)
     return mytags
     
   def tag_data(self,tag_id):
@@ -282,13 +282,17 @@ def format_section(s, printer):
     format_section2(s,printer)
   elif s.h.id == 3:
     format_section3(s,printer)
+  elif s.h.id == 4:
+    format_section4(s,printer)
   elif s.h.id == 5:
     format_section5(s,printer)
   elif s.h.id == 6:
     format_section6(s,printer)
   elif s.h.id == 7:
     format_section7(s,printer)
-
+  elif s.h.id == 8:
+    format_section8(s,printer)
+    
 def format_section0(s0,printer):
   # section 0
   printer.p('--Section0--','----')
@@ -372,6 +376,22 @@ def format_section7(s7,printer):
   print()
   printer.p('--Section7--','----')
   format_header(s7.h,printer)
+
+def format_section4(s4,printer):
+  if not s4.p.section_has_data():
+    return
+  
+  print()
+  printer.p('--Section4--','----')
+  format_header(s4.h,printer)
+
+def format_section8(s8,printer):
+  if not s8.p.section_has_data():
+    return
+  
+  print()
+  printer.p('--Section8--','----')
+  format_header(s8.h,printer)
   
 def format_header(h,printer):
   printer.p('--SectionHeader--','----')
