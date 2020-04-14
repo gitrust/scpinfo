@@ -52,18 +52,18 @@ class ScpReader:
     # available section ids (1-11)
     for sid in range(1,12):
       if s0.has_section(sid):
-        s = self._section(s0.pointer_for_section(sid), scpRecord.number_of_leads())
+        p = s0.pointer_for_section(sid)
+        s = self._section(p, scpRecord.number_of_leads())
         if s is None:
           print("ERROR: Section " + str(sid) + " pointer is corrupt")
           continue
         elif s.h.len == 0:
-          print("ERROR: Section " + str(sid) + " is header is corrupt")
+          print("ERROR: Section header " + str(sid) + " is corrupt")
           continue
         else:
           scpRecord.sections.append(s)
     return scpRecord
-
-  
+    
   def _sectionheader(self):
     header = SectionHeader()
     header.crc = self.reader.readint(2)

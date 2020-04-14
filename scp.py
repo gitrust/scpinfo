@@ -58,6 +58,9 @@ class SectionHeader:
     self.protnr = 0
     self.reserved = None
     
+  def __str__(self):
+    return 'crc:{0},id:{1},len:{2},ver:{3},prot:{4},resvd:{5}'.format(self.crc,self.id,self.len,self.versnr,self.protnr,self.reserved)
+    
 class Tag:
   def __init__(self):
     self.tag = 0

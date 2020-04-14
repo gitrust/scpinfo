@@ -23,8 +23,7 @@ def format_scp(f):
   
   for s in scp.sections:
     format_section(s,printer)
-  
-  print()
+
   
 def main():
   f = sys.argv[1]
