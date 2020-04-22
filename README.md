@@ -14,6 +14,8 @@ Currently following SCP section can be read with this tool
 - Section6 (partly)
 - Section7 (partly)
 
+Section2 is not interpreted currently, so if section2 is available  section5 and section6 samples would need recalculation using Huffman tables from section2.
+
 # Command line usage
 
     python scpinfo.py ecgfile.scp
@@ -32,7 +34,8 @@ Id:                            0
 Length                         136
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       SCPECG
+----                           ----
 Pointer Count                  12
 Pointers                       0(136), 1(168), 2(18), 3(126), 4(22), 5(3342), 6(30084), 7(242), 8(0), 9(0), 10(0), 11(0)
 
@@ -43,15 +46,18 @@ Id:                            1
 Length                         168
 VersionNr                      20
 ProtocolNr                     20
-                               ----
-Res                                  
+Reserved                       
+----                           ----
+Res                            
 Tags                           12
 FirstName                      
-LastName                       Clark 
-Pat Id                         SBJ-123 
+LastName                       Clark
+Pat Id                         SBJ-123
 LastName(2)                    
 Age                            
 DateOfBirth                    1953/5/8
+Height                         
+Weight                         
 Sex                            Male
 Race                           Caucasian
 Sys (mmHg)                     
@@ -86,7 +92,8 @@ Id:                            2
 Length                         18
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       
+----                           ----
 
 --Section3--                   ----
 --SectionHeader--              ----
@@ -95,12 +102,23 @@ Id:                            3
 Length                         126
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       
+----                           ----
 RefBeatSet                     False
 Sim-rec Leads                  12
 LeadCount                      12
 Leads                          I, II, V1, V2, V3, V4, V5, V6, III, aVR, aVL, aVF
 SampleCount                    I (5000), II (5000), V1 (5000), V2 (5000), V3 (5000), V4 (5000), V5 (5000), V6 (5000), III (5000), aVR (5000), aVL (5000), aVF (5000)
+
+--Section4--                   ----
+--SectionHeader--              ----
+CRC                            4777
+Id:                            4
+Length                         22
+VersionNr                      20
+ProtocolNr                     20
+Reserved                       
+----                           ----
 
 --Section5--                   ----
 --SectionHeader--              ----
@@ -109,7 +127,8 @@ Id:                            5
 Length                         3342
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       
+----                           ----
 AVM (nV)                       2500
 SampleTime (µs)                2000
 Sample Encoding                Second difference
@@ -122,7 +141,8 @@ Id:                            6
 Length                         30084
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       
+----                           ----
 AVM (nV)                       2500
 SampleTime (µs)                2000
 Sample Encoding                Second difference
@@ -136,6 +156,8 @@ Id:                            7
 Length                         242
 VersionNr                      20
 ProtocolNr                     20
-                               ----
+Reserved                       
+----                           ----
+
 ```
 
