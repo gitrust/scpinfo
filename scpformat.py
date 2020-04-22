@@ -48,6 +48,7 @@ class Section1TagsFormatter:
         printer.p('LastName(2)', self.format_tag(3))
         PatientAgeFormatter(self.tag_data(4)).format(printer)
         DateOfBirthFormatter(self.tag_data(5)).format(printer)
+        PatientWeightFormatter(self.tag_data(7)).format(printer)
         PatientSexFormatter(self.tag_data(8)).format(printer)
         PatientRaceFormatter(self.tag_data(9)).format(printer)
         for t in self.tag_list(10):
@@ -98,8 +99,6 @@ class LeadIdFormatter:
         printer.p('SampleCount', s2)
 
 # tag 33
-
-
 class ElectrodeConfigFormatter:
     def __init__(self, bytes):
         self._print = False
@@ -114,8 +113,6 @@ class ElectrodeConfigFormatter:
                       '{0}/{1}'.format(self.value1, self.value2))
 
 # tag 34
-
-
 class DateTimeZoneFormatter:
     def __init__(self, bytes):
         self._print = False
@@ -132,8 +129,6 @@ class DateTimeZoneFormatter:
                 self.offset, self.index, self.desc))
 
 # tag 9
-
-
 class PatientRaceFormatter:
     def __init__(self, bytes):
         self.lookup = {
@@ -157,8 +152,6 @@ class PatientRaceFormatter:
         printer.p('Race', self.text)
 
 # tag 29
-
-
 class FilterBitMapFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -204,8 +197,6 @@ class PatientAgeFormatter:
         printer.p('Age', self.value)
 
 # tag 25
-
-
 class DateOfAcquisitionFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -218,8 +209,6 @@ class DateOfAcquisitionFormatter:
         printer.p('Date of Acquis.', self.value)
 
 # tag 26
-
-
 class TimeOfAcquisitionFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -234,9 +223,30 @@ class TimeOfAcquisitionFormatter:
     def format(self, printer):
         printer.p('Time of Acquis.', self.value)
 
+# tag7
+class PatientWeightFormatter:
+    def __init__(self, bytes):
+        self.lookup = {
+          0: 'Unspecified',
+          1: 'Kilogram',
+          2: 'Gram',
+          3: 'Pound',
+          4: 'Ounce'
+        }
+        self.text = ''
+        
+        if bytes:
+            weight = b2i(bytes[0:1])
+            unit = b2i(bytes[2:3])
+            self.text = '{0} {1}'.format(weight,self.lookup[unit])
+            
+    def __str__(self):
+        return self.text
+
+    def format(self, printer):
+        printer.p('Weight', self.text)
+          
 # tag 8
-
-
 class PatientSexFormatter:
     def __init__(self, bytes):
         self.lookup = {
@@ -261,8 +271,6 @@ class PatientSexFormatter:
         printer.p('Sex', self.text)
 
 # tag 5
-
-
 class DateOfBirthFormatter:
     def __init__(self, bytes):
         if bytes and len(bytes) > 2:
@@ -278,8 +286,6 @@ class DateOfBirthFormatter:
         printer.p('DateOfBirth', self.text)
 
 # tag 14
-
-
 class TagMachineId:
     def __init__(self, bytes):
         if bytes:
