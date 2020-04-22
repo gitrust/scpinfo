@@ -48,6 +48,7 @@ class Section1TagsFormatter:
         printer.p('LastName(2)', self.format_tag(3))
         PatientAgeFormatter(self.tag_data(4)).format(printer)
         DateOfBirthFormatter(self.tag_data(5)).format(printer)
+        PatientHeightFormatter(self.tag_data(6)).format(printer)
         PatientWeightFormatter(self.tag_data(7)).format(printer)
         PatientSexFormatter(self.tag_data(8)).format(printer)
         PatientRaceFormatter(self.tag_data(9)).format(printer)
@@ -224,12 +225,34 @@ class TimeOfAcquisitionFormatter:
         printer.p('Time of Acquis.', self.value)
 
 # tag7
+class PatientHeightFormatter:
+    def __init__(self, bytes):
+        self.lookup = {
+          0: 'Unspecified',
+          1: 'cm',
+          2: 'inch',
+          3: 'mm'
+        }
+        self.text = ''
+        
+        if bytes:
+            height = b2i(bytes[0:1])
+            unit = b2i(bytes[2:3])
+            self.text = '{0} {1}'.format(height,self.lookup[unit])
+            
+    def __str__(self):
+        return self.text
+
+    def format(self, printer):
+        printer.p('Height', self.text)
+        
+# tag7
 class PatientWeightFormatter:
     def __init__(self, bytes):
         self.lookup = {
           0: 'Unspecified',
-          1: 'Kilogram',
-          2: 'Gram',
+          1: 'kg',
+          2: 'g',
           3: 'Pound',
           4: 'Ounce'
         }
