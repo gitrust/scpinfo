@@ -3,6 +3,8 @@
 
 from scp import *
 
+import struct
+
 
 class FileReader:
     def __init__(self, filename):
@@ -16,7 +18,12 @@ class FileReader:
         return self.file.tell()
 
     def readint(self, n):
-        return int.from_bytes(self.file.read(n), 'little')
+        bytes = self.file.read(n)
+        if n == 2:
+            # little endian, 16bit signed short
+            value = struct.unpack("<h", bytes)
+            return int(value[0])
+        return int.from_bytes(bytes, 'little')
 
     def move(self, n):
         # move n bytes from beginning of file
