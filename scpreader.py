@@ -73,6 +73,8 @@ class ScpReader:
         header.versnr = self.reader.readint(1)
         header.protnr = self.reader.readint(1)
         header.reserved = self.reader.reads(6)
+        if header.reserved:
+          header.reserved = header.reserved.replace('\x00','')
 
         return header
 
