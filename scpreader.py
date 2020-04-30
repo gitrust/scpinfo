@@ -19,10 +19,14 @@ class FileReader:
 
     def readint(self, n):
         bytes = self.file.read(n)
-        if n == 2:
+        if n == 1:
+            # little endian, 8bit int
+            value = struct.unpack("B", bytes)[0]
+            return int(value)
+        elif n == 2:
             # little endian, 16bit signed short
-            value = struct.unpack("<h", bytes)
-            return int(value[0])
+            value = struct.unpack("<h", bytes)[0]
+            return int(value)
         return int.from_bytes(bytes, 'little')
 
     def move(self, n):
@@ -81,7 +85,7 @@ class ScpReader:
         header.protnr = self.reader.readint(1)
         header.reserved = self.reader.reads(6)
         if header.reserved:
-          header.reserved = header.reserved.replace('\x00','')
+            header.reserved = header.reserved.replace('\x00', '')
 
         return header
 

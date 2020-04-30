@@ -78,7 +78,7 @@ class Section1TagsFormatter:
         DateTimeZoneFormatter(self.tag_data(34)).format(printer)
         for t in self.tag_list(35):
             printer.p('Med. History', bdecode(t.data))
- 
+
 
 # Lead Format
 class LeadIdFormatter:
@@ -100,6 +100,8 @@ class LeadIdFormatter:
         printer.p('SampleCount', s2)
 
 # tag 33
+
+
 class ElectrodeConfigFormatter:
     def __init__(self, bytes):
         self._print = False
@@ -114,6 +116,8 @@ class ElectrodeConfigFormatter:
                       '{0}/{1}'.format(self.value1, self.value2))
 
 # tag 34
+
+
 class DateTimeZoneFormatter:
     def __init__(self, bytes):
         self._print = False
@@ -130,6 +134,8 @@ class DateTimeZoneFormatter:
                 self.offset, self.index, self.desc))
 
 # tag 9
+
+
 class PatientRaceFormatter:
     def __init__(self, bytes):
         self.lookup = {
@@ -153,6 +159,8 @@ class PatientRaceFormatter:
         printer.p('Race', self.text)
 
 # tag 29
+
+
 class FilterBitMapFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -198,6 +206,8 @@ class PatientAgeFormatter:
         printer.p('Age', self.value)
 
 # tag 25
+
+
 class DateOfAcquisitionFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -210,6 +220,8 @@ class DateOfAcquisitionFormatter:
         printer.p('Date of Acquis.', self.value)
 
 # tag 26
+
+
 class TimeOfAcquisitionFormatter:
     def __init__(self, bytes):
         self.value = ''
@@ -225,51 +237,57 @@ class TimeOfAcquisitionFormatter:
         printer.p('Time of Acquis.', self.value)
 
 # tag7
+
+
 class PatientHeightFormatter:
     def __init__(self, bytes):
         self.lookup = {
-          0: 'Unspecified',
-          1: 'cm',
-          2: 'inch',
-          3: 'mm'
+            0: 'Unspecified',
+            1: 'cm',
+            2: 'inch',
+            3: 'mm'
         }
         self.text = ''
-        
+
         if bytes:
             height = b2i(bytes[0:1])
             unit = b2i(bytes[2:3])
-            self.text = '{0} {1}'.format(height,self.lookup[unit])
-            
+            self.text = '{0} {1}'.format(height, self.lookup[unit])
+
     def __str__(self):
         return self.text
 
     def format(self, printer):
         printer.p('Height', self.text)
-        
+
 # tag7
+
+
 class PatientWeightFormatter:
     def __init__(self, bytes):
         self.lookup = {
-          0: 'Unspecified',
-          1: 'kg',
-          2: 'g',
-          3: 'Pound',
-          4: 'Ounce'
+            0: 'Unspecified',
+            1: 'kg',
+            2: 'g',
+            3: 'Pound',
+            4: 'Ounce'
         }
         self.text = ''
-        
+
         if bytes:
             weight = b2i(bytes[0:1])
             unit = b2i(bytes[2:3])
-            self.text = '{0} {1}'.format(weight,self.lookup[unit])
-            
+            self.text = '{0} {1}'.format(weight, self.lookup[unit])
+
     def __str__(self):
         return self.text
 
     def format(self, printer):
         printer.p('Weight', self.text)
-          
+
 # tag 8
+
+
 class PatientSexFormatter:
     def __init__(self, bytes):
         self.lookup = {
@@ -294,6 +312,8 @@ class PatientSexFormatter:
         printer.p('Sex', self.text)
 
 # tag 5
+
+
 class DateOfBirthFormatter:
     def __init__(self, bytes):
         if bytes and len(bytes) > 2:
@@ -309,6 +329,8 @@ class DateOfBirthFormatter:
         printer.p('DateOfBirth', self.text)
 
 # tag 14
+
+
 class TagMachineId:
     def __init__(self, bytes):
         if bytes:
@@ -415,6 +437,17 @@ def format_section5(s5, printer):
                                             for nr in s5.nr_bytes_for_leads))
 
 
+def format_section6_samples(s6, printer):
+    mylist = []
+    for s in s6.data:
+        mylist.append(s.samples)
+    row_format = "{:>6}" * (len(mylist))
+    z = zip(*mylist)
+
+    for row in list(z):
+        print(row_format.format(*row))
+
+
 def format_section6(s6, printer):
     if not s6.p.section_has_data():
         return
@@ -432,7 +465,8 @@ def format_section6(s6, printer):
     printer.p('SampleTime (µs)', s6.sample_time_interval)
     printer.p('Sample Encoding', enc_table[s6.sample_encoding])
     printer.p('Bimodal compression', s6.bimodal_compression == 1)
-    printer.p('Lead Samples, Bytes', ', '.join(str(nr) for nr in s6.nr_bytes_for_leads))
+    printer.p('Lead Samples, Bytes', ', '.join(str(nr)
+                                               for nr in s6.nr_bytes_for_leads))
 
 
 def format_section7(s7, printer):

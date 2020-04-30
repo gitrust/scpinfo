@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from scpformat import format_section
+import argparse
+
+from scpformat import format_section, format_section6_samples
 from scpreader import FileReader, ScpReader
 from scputil import ScpPrinter
 
 
-def format_scp(f):
+def format_scp(f, print_samples: False):
     fr = FileReader(f)
     scpReader = ScpReader(fr)
 
@@ -15,6 +17,10 @@ def format_scp(f):
     scpReader.close()
 
     printer = ScpPrinter()
+
+    if print_samples and scp.has_section(6):
+        format_section6_samples(scp.section(6), printer)
+        return
 
     printer.p('--ScpRec--', '----')
     printer.p('CRC', scp.crc)
@@ -24,9 +30,16 @@ def format_scp(f):
         format_section(s, printer)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--csv', nargs='?', help='print leads in CSV format')
+    parser.add_argument('scpfile', nargs='+', help='input SCP file')
+    return parser.parse_args()
+
+
 def main():
-    f = sys.argv[1]
-    format_scp(f)
+    args = parse_args()
+    format_scp(args.scpfile[0], args.csv)
 
 
 if __name__ == "__main__":
