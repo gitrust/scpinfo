@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scputil import b2i, bdecode, file2dict
+from scputil import b2i, bdecode, lead_dic
 
 
 class Section1TagsFormatter:
@@ -84,7 +84,7 @@ class Section1TagsFormatter:
 class LeadIdFormatter:
     def __init__(self, leads):
         self.leads = leads
-        self.leadnames = file2dict('leadtable.csv')
+        self.leadnames = lead_dic()
 
     def _leadname(self, key):
         name = self.leadnames[key]
@@ -437,13 +437,26 @@ def format_section5(s5, printer):
                                             for nr in s5.nr_bytes_for_leads))
 
 
-def format_section6_samples(s6, printer):
+def format_samples_as_csv(scp, printer):
+    if scp.has_section(6):
+        lead_name_dic = lead_dic()
+        lead_names = []
+        if scp.has_section(3):
+            leads = scp.section(3).leads
+            lead_names = list(lead_name_dic[lead.leadid] for lead in leads)
+        format_section6_samples(scp.section(6), lead_names, printer)
+
+
+def format_section6_samples(s6, leads_names, printer):
     mylist = []
     for s in s6.data:
         mylist.append(s.samples)
     row_format = "{:>6}" * (len(mylist))
     z = zip(*mylist)
 
+    # header
+    print(row_format.format(*leads_names))
+    # table with samples
     for row in list(z):
         print(row_format.format(*row))
 

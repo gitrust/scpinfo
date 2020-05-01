@@ -144,6 +144,10 @@ class Section3(Section):
 
 
 class DataSamples:
+    '''
+        samples for a lead
+    '''
+
     def __init__(self):
         self.samples = []
 
