@@ -451,14 +451,17 @@ def format_section6_samples(s6, leads_names, printer):
     mylist = []
     for s in s6.data:
         mylist.append(s.samples)
-    row_format = "{:>6}" * (len(mylist))
+    row_format = "{:>7}" * (len(mylist))
     z = zip(*mylist)
 
     # header
     print(row_format.format(*leads_names))
     # table with samples
-    for row in list(z):
-        print(row_format.format(*row))
+    try:
+        for row in list(z):
+            print(row_format.format(*row))
+    except (BrokenPipeError, IOError):
+        pass
 
 
 def format_section6(s6, printer):
