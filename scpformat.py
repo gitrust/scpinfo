@@ -42,10 +42,10 @@ class Section1TagsFormatter:
         return None
 
     def format(self, printer):
-        printer.p('FirstName', self.format_tag(1))
         printer.p('LastName', self.format_tag(0))
+        printer.p('FirstName', self.format_tag(1))        
         printer.p('Pat Id', self.format_tag(2))
-        printer.p('LastName(2)', self.format_tag(3))
+        printer.p('Second LastName', self.format_tag(3))
         PatientAgeFormatter(self.tag_data(4)).format(printer)
         DateOfBirthFormatter(self.tag_data(5)).format(printer)
         PatientHeightFormatter(self.tag_data(6)).format(printer)
@@ -57,6 +57,7 @@ class Section1TagsFormatter:
         printer.p('Sys (mmHg)', self.format_tag_int(11, 0, 2))
         printer.p('Dia (mmHg)', self.format_tag_int(12, 0, 2))
         TagMachineId(self.tag_data(14)).format(printer)
+        
         printer.p('Acq. Institution Desc', self.format_tag(16))
         printer.p('Acq. Institution Desc', self.format_tag(17))
         printer.p('Acq. Department Desc', self.format_tag(18))

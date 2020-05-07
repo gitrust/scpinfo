@@ -19,11 +19,15 @@ class FileReader:
 
     def readint(self, n):
         bytes = self.file.read(n)
+        if len(bytes) == 0:
+            print('ERR: Corrupt structure')
+            # TODO throw error
+                
         if n == 1:
             # little endian, 8bit int
             value = struct.unpack("B", bytes)[0]
             return int(value)
-        elif n == 2:
+        elif n == 2:            
             # little endian, 16bit signed short
             value = struct.unpack("<h", bytes)[0]
             return int(value)
@@ -38,7 +42,6 @@ class FileReader:
 
     def reads(self, n):
         # convert bytes to str
-        # return "".join(map(chr, self.file.read(n)))
         return self.file.read(n).decode('iso-8859-1')
 
     def close(self):
