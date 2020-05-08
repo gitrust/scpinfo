@@ -9,7 +9,7 @@ from scpreader import FileReader, ScpReader
 from scputil import ScpPrinter, lead_dic
 
 
-def format_scp(f, print_samples: False):
+def format_scp(f, csv_argument):
     fr = FileReader(f)
     scpReader = ScpReader(fr)
 
@@ -18,8 +18,8 @@ def format_scp(f, print_samples: False):
 
     printer = ScpPrinter()
 
-    if print_samples:
-        format_samples_as_csv(scp, printer)
+    if csv_argument is not None:
+        format_samples_as_csv(scp, csv_argument[0], printer)
         return
 
     printer.p('--ScpRec--', '----')
@@ -34,7 +34,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('scpfile', nargs='+', help='input SCP file')
     parser.add_argument(
-        '--csv', help='print leads in CSV format', action="store_true")
+        '--csv', type=int, nargs=1, metavar='section_id', help='print leads in CSV format for section 5 or 6, specify here a section id')
     return parser.parse_args()
 
 

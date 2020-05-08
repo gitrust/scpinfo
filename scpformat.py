@@ -438,19 +438,22 @@ def format_section5(s5, printer):
                                             for nr in s5.nr_bytes_for_leads))
 
 
-def format_samples_as_csv(scp, printer):
-    if scp.has_section(6):
+def format_samples_as_csv(scp, section_id, printer):
+    if section_id not in (5,6):
+      return
+      
+    if scp.has_section(section_id):
         lead_name_dic = lead_dic()
         lead_names = []
         if scp.has_section(3):
             leads = scp.section(3).leads
             lead_names = list(lead_name_dic[lead.leadid] for lead in leads)
-        format_section6_samples(scp.section(6), lead_names, printer)
+        format_section_samples(scp.section(section_id), lead_names, printer)
 
 
-def format_section6_samples(s6, leads_names, printer):
+def format_section_samples(section, leads_names, printer):
     mylist = []
-    for s in s6.data:
+    for s in section.data:
         mylist.append(s.samples)
     row_format = "{:>7}" * (len(mylist))
     z = zip(*mylist)
