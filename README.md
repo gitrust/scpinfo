@@ -1,6 +1,6 @@
 # Description
 
-A python command line tool to read an SCP-ECG (https://en.wikipedia.org/wiki/SCP-ECG) file and print structure information about ECG traces and metadata
+A python command line tool to read an SCP-ECG (https://en.wikipedia.org/wiki/SCP-ECG) file and print structure information about ECG traces and metadata.
 
 # SCP-ECG Support
 
@@ -13,15 +13,26 @@ Currently following SCP section can be read with this tool
 - Section5 (partly)
 - Section6 (partly)
 - Section7 (partly)
+- Section8 (partly)
 
 Section2 is not interpreted currently, so if section2 is available  section5 and section6 samples would need recalculation using Huffman tables from section2.
 
 # Command line usage
 
-    python scpinfo.py ecgfile.scp
+	usage: scpinfo.py [-h] [--csv section_id] scpfile
+
+	positional arguments:
+	  scpfile           input SCP file
+
+	optional arguments:
+	  -h, --help        show this help message and exit
+	  --csv section_id  print leads in CSV format for section 5 or 6, specify here
+						a section id
 
 
 # Example output
+
+	python scpinfo.py example/example.scp
 
 ```
 --ScpRec--                     ----
@@ -50,10 +61,10 @@ Reserved
 ----                           ----
 Res                            
 Tags                           12
-FirstName                      
 LastName                       Clark
+FirstName                      
 Pat Id                         SBJ-123
-LastName(2)                    
+Second LastName                
 Age                            
 DateOfBirth                    1953/5/8
 Height                         
@@ -97,7 +108,7 @@ Reserved
 
 --Section3--                   ----
 --SectionHeader--              ----
-CRC                            45638
+CRC                            -19898
 Id:                            3
 Length                         126
 VersionNr                      20
@@ -122,7 +133,7 @@ Reserved
 
 --Section5--                   ----
 --SectionHeader--              ----
-CRC                            43502
+CRC                            -22034
 Id:                            5
 Length                         3342
 VersionNr                      20
@@ -136,7 +147,7 @@ RefBeat 0, Bytes               272, 270, 258, 282, 266, 270, 260, 276, 322, 242,
 
 --Section6--                   ----
 --SectionHeader--              ----
-CRC                            61490
+CRC                            -4046
 Id:                            6
 Length                         30084
 VersionNr                      20
@@ -159,11 +170,12 @@ ProtocolNr                     20
 Reserved                       
 ----                           ----
 
+
 ```
 
 # CSV output
 
-	python scpinfo.py --csv example.scp | head
+	python scpinfo.py --csv 6 example/example.scp | head
 	
 
 ```
@@ -176,5 +188,5 @@ Reserved
  -25271  22905  23490  -6514  15955 -17305   7029 -18795  -1195 -27291 -26267  15329
   -9838  30646 -14314  -3722  15843   1775 -28789 -16525  20374  21798  28334  19941
   19666  28307  19422 -27796  26564  14199  10617  -8402  21630  22238  29415  -7109
-  13033  22946  19062  14947 -26199  21013  15219  -2101   7927  25326 -25143 -11028
+  13033  22946  19062  14947 -26199  21013  15219  -2101   7927  25326 -25143 -11028	
 ```

@@ -30,18 +30,18 @@ def format_scp(f, csv_argument):
         format_section(s, printer)
 
 
-def parse_args():
+def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('scpfile', nargs='+', help='input SCP file')
+    parser.add_argument('scpfile', help='input SCP file')
     parser.add_argument(
         '--csv', type=int, nargs=1, metavar='section_id', help='print leads in CSV format for section 5 or 6, specify here a section id')
-    return parser.parse_args()
+    return parser
 
 
 def main():
-    args = parse_args()
-    format_scp(args.scpfile[0], args.csv)
-
+    args = argparser().parse_args()
+    if args.scpfile:
+        format_scp(args.scpfile, args.csv)
 
 if __name__ == "__main__":
     main()
