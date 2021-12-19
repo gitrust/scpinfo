@@ -15,26 +15,26 @@ Currently following SCP sections can be read with this tool
 - Section7 (partly)
 - Section8 (partly)
 
-Section2 (Huffman encoding) is not interpreted currently, so if section2 is available  Section5 and Section6 samples would need recalculation using Huffman tables from Section2.
+Section2 (Huffman encoding) is not interpreted currently, so if Section2 is available  Section5 and Section6 samples would need recalculation using Huffman tables from Section2.
 
 # Command line usage
 
 ```
-	usage: scpinfo.py [-h] [--csv section_id] scpfile
+usage: scpinfo.py [-h] [--csv section_id] scpfile
 
-	positional arguments:
-	  scpfile           input SCP file
+positional arguments:
+    scpfile           input SCP file
 
-	optional arguments:
-	  -h, --help        show this help message and exit
-	  --csv section_id  print leads in CSV format for section 5 or 6, specify here
-						a section id
+optional arguments:
+    -h, --help        show this help message and exit
+    --csv section_id  print leads in CSV format for section 5 or 6, specify here
+                    a section id
 ```
 
 # Example usage
 
 ```
-	python scpinfo.py example/example.scp
+python scpinfo.py example/example.scp
 ```
 
 ```
@@ -172,14 +172,12 @@ VersionNr                      20
 ProtocolNr                     20
 Reserved                       
 ----                           ----
-
-
 ```
 
 # Example CSV usage
 
 ```
-	python scpinfo.py --csv 6 example/example.scp | head
+python scpinfo.py --csv 6 example/example.scp | head
 ```
 	
 
