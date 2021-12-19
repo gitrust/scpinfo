@@ -4,7 +4,7 @@ A python command line tool to read an SCP-ECG (https://en.wikipedia.org/wiki/SCP
 
 # SCP-ECG Support
 
-Currently following SCP section can be read with this tool
+Currently following SCP sections can be read with this tool
 
 - Section0
 - Section1
@@ -15,10 +15,11 @@ Currently following SCP section can be read with this tool
 - Section7 (partly)
 - Section8 (partly)
 
-Section2 is not interpreted currently, so if section2 is available  section5 and section6 samples would need recalculation using Huffman tables from section2.
+Section2 (Huffman encoding) is not interpreted currently, so if section2 is available  Section5 and Section6 samples would need recalculation using Huffman tables from Section2.
 
 # Command line usage
 
+```
 	usage: scpinfo.py [-h] [--csv section_id] scpfile
 
 	positional arguments:
@@ -28,11 +29,13 @@ Section2 is not interpreted currently, so if section2 is available  section5 and
 	  -h, --help        show this help message and exit
 	  --csv section_id  print leads in CSV format for section 5 or 6, specify here
 						a section id
+```
 
+# Example usage
 
-# Example output
-
+```
 	python scpinfo.py example/example.scp
+```
 
 ```
 --ScpRec--                     ----
@@ -173,9 +176,11 @@ Reserved
 
 ```
 
-# CSV output
+# Example CSV usage
 
+```
 	python scpinfo.py --csv 6 example/example.scp | head
+```
 	
 
 ```

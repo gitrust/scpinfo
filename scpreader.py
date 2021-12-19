@@ -7,55 +7,66 @@ import struct
 
 
 class FileReader:
+    """
+      Reads an scp file in binary format,
+      offers some handy methods to jump in file and read chunks of bytes as string or int
+    """
     def __init__(self, filename):
         self.filename = filename
         self.file = open(filename, 'rb')
 
     def read(self, n):
+        """Read number 'n' of bytes"""
         return self.file.read(n)
 
     def pos(self):
+        """Tell the current position of file read pointer"""
         return self.file.tell()
 
     def readint(self, n):
+        """Read n bytes and converts to int (little endian)"""
         bytes = self.file.read(n)
         if len(bytes) == 0:
-            print('ERR: Corrupt structure')
+            print('ERR: Could not readint, corrupt structure. File position ' + self.pos())
             # TODO throw error
-                
+
         if n == 1:
             # little endian, 8bit int
             value = struct.unpack("B", bytes)[0]
             return int(value)
-        elif n == 2:            
+        elif n == 2:
             # little endian, 16bit signed short
             value = struct.unpack("<h", bytes)[0]
             return int(value)
         return int.from_bytes(bytes, 'little')
 
     def move(self, n):
-        # move n bytes from beginning of file
-        self.file.seek(n, 0)
+        """move n bytes from beginning of file"""
+        return self.file.seek(n, 0)
 
     def skip(self, n):
         pass
 
     def reads(self, n):
-        # convert bytes to str
+        """read n bytes and converts to str"""
         return self.file.read(n).decode('iso-8859-1')
 
     def close(self):
+        """Close file"""
         self.file.close()
 
 
 class ScpReader:
+    """Reads an scp file, logical part which builds an ScpRecord"""
     def __init__(self, fileReader):
         self.reader = fileReader
 
     def close(self):
+        """Close file"""
         self.reader.close()
 
     def read_scp(self):
+        """Read an scp file into memory and returns a ScpRecord"""
         scpRecord = ScpRecord()
         scpRecord.crc = self.reader.readint(2)
         scpRecord.len = self.reader.readint(4)
@@ -80,6 +91,7 @@ class ScpReader:
 
     # 16bytes header
     def _sectionheader(self):
+        """Read and return a section header"""
         header = SectionHeader()
         header.crc = self.reader.readint(2)
         header.id = self.reader.readint(2)
@@ -93,6 +105,7 @@ class ScpReader:
         return header
 
     def _sectionpointer(self):
+        """Read and return a section pointer"""
         p = SectionPointer()
         p.id = self.reader.readint(2)
         # section length
@@ -102,6 +115,7 @@ class ScpReader:
         return p
 
     def _section0(self):
+        """Read and return Section0"""
         h = self._sectionheader()
         s = Section0(h)
         s.p = []
@@ -122,6 +136,7 @@ class ScpReader:
         return s
 
     def _readtag(self):
+        """Read and return a scp tag"""
         tag = Tag()
         tag.tag = self.reader.readint(1)
         tag.len = self.reader.readint(2)
@@ -131,6 +146,7 @@ class ScpReader:
         return tag
 
     def _readleadid(self):
+        """Read and return a LeadId"""
         leadid = LeadIdentification()
         leadid.startsample = self.reader.readint(4)
         leadid.endsample = self.reader.readint(4)
@@ -138,6 +154,7 @@ class ScpReader:
         return leadid
 
     def _section(self, pointer, nr_of_leads):
+        """Read a section by given pointer id"""
         if pointer.id == 1:
             return self._section1(pointer)
         if pointer.id == 2:
@@ -157,6 +174,7 @@ class ScpReader:
         return None
 
     def _section1(self, pointer):
+        """Read and return section 1"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -172,6 +190,7 @@ class ScpReader:
         return s
 
     def _section2(self, pointer):
+        """Read section 2"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -179,6 +198,7 @@ class ScpReader:
         return s
 
     def _section3(self, pointer):
+        """Read section 3"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -198,6 +218,7 @@ class ScpReader:
         return s
 
     def _section5(self, pointer, nr_of_leads):
+        """Read section 5"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -228,6 +249,7 @@ class ScpReader:
         return s
 
     def _section6(self, pointer, nr_of_leads):
+        """Read section 6"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -257,6 +279,7 @@ class ScpReader:
         return s
 
     def _section7(self, pointer):
+        """Read section 7"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -265,6 +288,7 @@ class ScpReader:
         return s
 
     def _section4(self, pointer):
+        """Read section 4"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -273,6 +297,7 @@ class ScpReader:
         return s
 
     def _section8(self, pointer):
+        """Read section 8"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()

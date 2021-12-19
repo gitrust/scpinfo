@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 import argparse
 
 from scpformat import format_section, format_samples_as_csv
@@ -10,6 +9,11 @@ from scputil import ScpPrinter, lead_dic
 
 
 def format_scp(f, csv_argument):
+    """
+        Format scp file 'f'
+
+        csv_argument - optional section id for CSV output
+    """
     fr = FileReader(f)
     scpReader = ScpReader(fr)
 

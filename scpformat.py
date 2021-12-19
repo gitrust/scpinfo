@@ -15,12 +15,14 @@ class Section1TagsFormatter:
         return ''
 
     def get_tag(self, id):
+        """Return tag with id 'id'"""
         for _tag in self.tags:
             if _tag.tag == id:
                 return _tag
         return None
 
     def format_tag(self, tag):
+        """Format given tag"""
         for _tag in self.tags:
             if _tag.tag == tag:
                 return bdecode(_tag.data)
@@ -28,6 +30,7 @@ class Section1TagsFormatter:
 
     # multiple tags
     def tag_list(self, tag_id):
+        """Return a tag list for given tag id"""
         mytags = []
         for _tag in self.tags:
             if _tag.tag == tag_id:
@@ -35,6 +38,7 @@ class Section1TagsFormatter:
         return mytags
 
     def tag_data(self, tag_id):
+        """Return tag data for tag with id 'tag_id'"""
         for _tag in self.tags:
             if _tag.tag == tag_id:
                 return _tag.data
@@ -43,7 +47,7 @@ class Section1TagsFormatter:
 
     def format(self, printer):
         printer.p('LastName', self.format_tag(0))
-        printer.p('FirstName', self.format_tag(1))        
+        printer.p('FirstName', self.format_tag(1))
         printer.p('Pat Id', self.format_tag(2))
         printer.p('Second LastName', self.format_tag(3))
         PatientAgeFormatter(self.tag_data(4)).format(printer)
@@ -57,7 +61,7 @@ class Section1TagsFormatter:
         printer.p('Sys (mmHg)', self.format_tag_int(11, 0, 2))
         printer.p('Dia (mmHg)', self.format_tag_int(12, 0, 2))
         TagMachineId(self.tag_data(14)).format(printer)
-        
+
         printer.p('Acq. Institution Desc', self.format_tag(16))
         printer.p('Acq. Institution Desc', self.format_tag(17))
         printer.p('Acq. Department Desc', self.format_tag(18))
@@ -100,10 +104,8 @@ class LeadIdFormatter:
             lead.leadid), lead.sample_count()) for lead in self.leads)
         printer.p('SampleCount', s2)
 
-# tag 33
-
-
 class ElectrodeConfigFormatter:
+    """Tag 33"""
     def __init__(self, bytes):
         self._print = False
         if bytes and len(bytes) > 1:
@@ -116,10 +118,9 @@ class ElectrodeConfigFormatter:
             printer.p('Electrode Config.',
                       '{0}/{1}'.format(self.value1, self.value2))
 
-# tag 34
-
 
 class DateTimeZoneFormatter:
+    """Tag 34"""
     def __init__(self, bytes):
         self._print = False
         if bytes:
@@ -134,10 +135,10 @@ class DateTimeZoneFormatter:
             printer.p('TimeZone', 'Offset:{0}m, Idx:{1}, Desc:{2}'.format(
                 self.offset, self.index, self.desc))
 
-# tag 9
-
 
 class PatientRaceFormatter:
+    """Tag 9"""
+
     def __init__(self, bytes):
         self.lookup = {
             0: 'Unspecified',
@@ -159,10 +160,10 @@ class PatientRaceFormatter:
     def format(self, printer):
         printer.p('Race', self.text)
 
-# tag 29
 
 
 class FilterBitMapFormatter:
+    """Tag 29"""
     def __init__(self, bytes):
         self.value = ''
 
@@ -206,10 +207,9 @@ class PatientAgeFormatter:
     def format(self, printer):
         printer.p('Age', self.value)
 
-# tag 25
-
 
 class DateOfAcquisitionFormatter:
+    """Tag 25"""
     def __init__(self, bytes):
         self.value = ''
         if bytes and len(bytes) > 3:
@@ -220,10 +220,9 @@ class DateOfAcquisitionFormatter:
     def format(self, printer):
         printer.p('Date of Acquis.', self.value)
 
-# tag 26
-
 
 class TimeOfAcquisitionFormatter:
+    """Tag 26"""
     def __init__(self, bytes):
         self.value = ''
         if bytes and len(bytes) > 2:
@@ -237,10 +236,9 @@ class TimeOfAcquisitionFormatter:
     def format(self, printer):
         printer.p('Time of Acquis.', self.value)
 
-# tag7
-
 
 class PatientHeightFormatter:
+    """Tag 7"""
     def __init__(self, bytes):
         self.lookup = {
             0: 'Unspecified',
@@ -261,10 +259,8 @@ class PatientHeightFormatter:
     def format(self, printer):
         printer.p('Height', self.text)
 
-# tag7
-
-
 class PatientWeightFormatter:
+    """Tag 7"""
     def __init__(self, bytes):
         self.lookup = {
             0: 'Unspecified',
@@ -286,10 +282,8 @@ class PatientWeightFormatter:
     def format(self, printer):
         printer.p('Weight', self.text)
 
-# tag 8
-
-
 class PatientSexFormatter:
+    """Tag 8"""
     def __init__(self, bytes):
         self.lookup = {
             0: 'Not Known',
@@ -312,10 +306,9 @@ class PatientSexFormatter:
     def format(self, printer):
         printer.p('Sex', self.text)
 
-# tag 5
-
 
 class DateOfBirthFormatter:
+    """Tag 5"""
     def __init__(self, bytes):
         if bytes and len(bytes) > 2:
             self.text = '{0}/{1}/{2}'.format(
@@ -329,10 +322,10 @@ class DateOfBirthFormatter:
     def format(self, printer):
         printer.p('DateOfBirth', self.text)
 
-# tag 14
 
 
 class TagMachineId:
+    """Tag 14"""
     def __init__(self, bytes):
         if bytes:
             self.instNr = b2i(bytes[0:2])
@@ -441,7 +434,7 @@ def format_section5(s5, printer):
 def format_samples_as_csv(scp, section_id, printer):
     if section_id not in (5,6):
       return
-      
+
     if scp.has_section(section_id):
         lead_name_dic = lead_dic()
         lead_names = []
@@ -455,7 +448,7 @@ def format_section_samples(section, leads_names, printer):
     mylist = []
     for s in section.data:
         mylist.append(s.samples)
-    row_format = "{:>7}" * (len(mylist))
+    row_format = "{:>7}," * (len(mylist))
     z = zip(*mylist)
 
     # header

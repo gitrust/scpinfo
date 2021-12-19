@@ -5,19 +5,23 @@
 
 
 def b2i(bytes):
+    """Convert bytes to int (little endian)"""
     return int.from_bytes(bytes, 'little')
 
 
 def bdecode(bytes):
+    """Decode bytes as iso-8859-1 and remove null terminators"""
     # remove null terminators
     return bytes.decode('iso-8859-1').rstrip('\0')
 
 
 def lead_dic():
+    """Return lead dictionary from file"""
     return file2dict('leadtable.csv')
 
 
 def file2dict(file):
+    """Converts a file to dictionary"""
     d = {}
     with open(file) as f:
         for line in f:
@@ -30,7 +34,7 @@ def file2dict(file):
 
 def crc16(data: bytes, poly=0x1021):
     '''
-    CRC-16-CCITT Algorithm
+    CRC-16-CCITT Algorithm checksum
     '''
     #data = bytearray(data)
     crc = 0xFFFF
@@ -49,6 +53,7 @@ def crc16(data: bytes, poly=0x1021):
 
 
 class ScpPrinter:
+    """A simple printer class to print a pair of arguments"""
     def __init__(self):
         pass
 
