@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    SCP section and attribute formatter
+"""
+
 from scputil import b2i, bdecode, lead_dic
 
 
@@ -408,7 +412,6 @@ def format_section3(s3, printer):
     printer.p('Sim-rec Leads', s3.nr_leads_sim)
     printer.p('LeadCount', len(s3.leads))
     LeadIdFormatter(s3.leads).format(printer)
-    #printer.p('Leads (Samples)', ', '.join(str(lead) for lead in s3.leads))
 
 
 def format_section5(s5, printer):
