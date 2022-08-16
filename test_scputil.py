@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Test Code
 
 from scputil import *
@@ -15,3 +17,8 @@ def test_crc16():
     b = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
     checksum = crc16(b)
     assert checksum == 35581
+    
+def test_b2i():
+    b = (978).to_bytes(2, byteorder='little')
+    i = b2i(b)
+    assert 978 == i
