@@ -100,20 +100,7 @@ class Section0(Section):
         return None
 
 
-class Section1(Section):
-    """Patient data"""
-    def __init__(self, header, pointer):
-        super().__init__(header)
-        self.p = pointer
-        # tags 10,13,30,32,35 may exist multiple times
-        self.tags = []
-        self.datalen = 0
 
-class Section2(Section):
-    """Section 2 with Huffman tables"""
-    def __init__(self, header, pointer):
-        super().__init__(header)
-        self.p = pointer
 
 # in section3
 
@@ -132,8 +119,34 @@ class LeadIdentification:
         """Return number of samples for this LeadId"""
         return self.endsample - self.startsample + 1
 
+
+
+
+class DataSamples:
+    """
+        Data samples for a lead, for Sections 5 (ref. beat samples) and Section 6 (samples)
+    """
+
+    def __init__(self):
+        self.samples = []
+
+class Section1(Section):
+    """Section 1 - Patient data, ECG Aquisition data"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+        # tags 10,13,30,32,35 may exist multiple times
+        self.tags = []
+        self.datalen = 0
+
+class Section2(Section):
+    """Section 2 - Huffman tables used in encoding of Ecg data"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+        
 class Section3(Section):
-    """Section 3 with leads"""
+    """Section 3 - ECG Leads definition"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
@@ -146,15 +159,12 @@ class Section3(Section):
         self.leads = []
 
 
-class DataSamples:
-    """
-        Data samples for a lead, for Sections 5 (ref. beat samples) and Section 6 (samples)
-    """
-
-    def __init__(self):
-        self.samples = []
-
-
+class Section4(Section):
+    """Section 4 - Reserved for legacy SCP-ECG versions"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+        
 class Section5(Section):
     """Section 5 with samples"""
     def __init__(self, header, pointer):
@@ -176,7 +186,7 @@ class Section5(Section):
 
 
 class Section6(Section):
-    """Section 6 with rythm data"""
+    """Section 6 - Long-term ECG rythm data"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
@@ -195,22 +205,39 @@ class Section6(Section):
         self.data = []
 
 
-class Section4(Section):
-    """Section 4"""
-    def __init__(self, header, pointer):
-        super().__init__(header)
-        self.p = pointer
-
-
 class Section7(Section):
-    """Section 7, Global Measurements"""
+    """Section 7 - Global ECG Measurements"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
 
 
 class Section8(Section):
-    """Section 8"""
+    """Section 8 - Textual diagnosis"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+
+class Section9(Section):
+    """Section 9 - Manufacturer Specific diagnostic and overreading data"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+
+class Section10(Section):
+    """Section 10 - per Lead ECG Measurements"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+
+class Section11(Section):
+    """Section 11 - Universal Statement Codes resulting from the interpretation"""
+    def __init__(self, header, pointer):
+        super().__init__(header)
+        self.p = pointer
+
+class Section12(Section):
+    """Section 12 - Long-Term ECG Rythm data"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer

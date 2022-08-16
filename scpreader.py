@@ -78,9 +78,9 @@ class ScpReader:
         for sid in range(1, 12):
             if s0.has_section(sid):
                 p = s0.pointer_for_section(sid)
-                s = self._section(p, scpRecord.number_of_leads())
+                s = self._read_section(p, scpRecord.number_of_leads())
                 if s is None:
-                    print("ERROR: Section " + str(sid) + " pointer is corrupt")
+                    print("Skip Section " + str(sid))
                     continue
                 elif s.h.len == 0:
                     print("ERROR: Section header " + str(sid) + " is corrupt")
@@ -153,7 +153,7 @@ class ScpReader:
         leadid.leadid = self.reader.readint(1)
         return leadid
 
-    def _section(self, pointer, nr_of_leads):
+    def _read_section(self, pointer, nr_of_leads):
         """Read a section by given pointer id"""
         if pointer.id == 1:
             return self._section1(pointer)
@@ -171,10 +171,20 @@ class ScpReader:
             return self._section7(pointer)
         elif pointer.id == 8:
             return self._section8(pointer)
+        elif pointer.id == 9:
+            return self._section9(pointer)
+        elif pointer.id == 10:
+            return self._section10(pointer)
+        elif pointer.id == 11:
+            return self._section11(pointer)
+        elif pointer.id == 12:
+            return self._section12(pointer)
+        elif pointer.id > 12:
+            print("WARN: Section Id %s is not implemented" % str(pointer.id))
         return None
 
     def _section1(self, pointer):
-        """Read and return section 1"""
+        """Read section 1"""
         self.reader.move(pointer.index - 1)
 
         header = self._sectionheader()
@@ -210,8 +220,8 @@ class ScpReader:
         s.ref_beat_substr = bool(s.flags >> 1 & 1)
         # bits 3-7
         s.nr_leads_sim = s.flags >> 3 & 0b1111
+        
         s.leads = []
-
         for _ in range(0, s.nrleads):
             lead = self._readleadid()
             s.leads.append(lead)
@@ -302,5 +312,50 @@ class ScpReader:
 
         header = self._sectionheader()
         s = Section8(header, pointer)
+
+        return s
+
+    def _section9(self, pointer):
+        """Read section 9"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section9(header, pointer)
+
+        return s
+
+    def _section9(self, pointer):
+        """Read section 9"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section9(header, pointer)
+
+        return s
+        
+    def _section10(self, pointer):
+        """Read section 10"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section10(header, pointer)
+
+        return s
+        
+    def _section11(self, pointer):
+        """Read section 11"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section11(header, pointer)
+
+        return s
+
+    def _section12(self, pointer):
+        """Read section 12"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section12(header, pointer)
 
         return s
