@@ -370,12 +370,15 @@ def format_section(s, printer):
         format_section7(s, printer)
     elif s.h.id == 8:
         format_section8(s, printer)
+    else:
+        format_section_default(s, s.h.id, printer)
 
 
 def format_section0(s0, printer):
     # section 0
     printer.p('--Section0--', '----')
     format_header(s0.h, printer)
+    
     printer.p('Pointer Count', len(s0.p))
     printer.p('Pointers', ', '.join(str(p) for p in s0.p))
 
@@ -511,9 +514,16 @@ def format_section8(s8, printer):
     printer.p('--Section8--', '----')
     format_header(s8.h, printer)
 
+def format_section_default(s, section_id, printer):
+    if not s.p.section_has_data():
+        return
 
+    print()
+    printer.p('--Section' + str(section_id) + '--', '----')
+    format_header(s.h, printer)
+    
 def format_header(h, printer):
-    printer.p('--SectionHeader--', '----')
+    printer.p('--Header--', '----')
     printer.p('CRC', h.crc)
     printer.p('Id:', h.id)
     printer.p('Length', h.len)
