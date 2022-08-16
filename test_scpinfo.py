@@ -3,6 +3,7 @@
 # Test Code
 
 from scpreader import FileReader, ScpReader
+from scpformat import Section1TagsFormatter, PatientSexFormatter, PatientRaceFormatter
 
 def test_scp_record():
     scp = read_scp()
@@ -57,13 +58,34 @@ def test_section1_tags():
     scp = read_scp()
 
     s1 = scp.section(1)
+
+    f = Section1TagsFormatter(s1.tags)
+
     assert 0 == s1.tags[0].tag
     assert 6 == s1.tags[0].len
+    assert 12 == len(s1.tags)
+    assert "Clark" == f.format_tag(0)
+    assert "SBJ-123" == f.format_tag(2)
+    assert "Male" == PatientSexFormatter(f.tag_data(8)).text
+    assert "Caucasian" == PatientRaceFormatter(f.tag_data(9)).text
 
     assert 2 == s1.tags[1].tag
     assert 8 == s1.tags[1].len
 
+def test_section2():
+    scp = read_scp()
 
+    s2 = scp.section(2)
+    assert s2.p
+    assert s2.p.section_has_data()
+
+def test_section3():
+    scp = read_scp()
+
+    s3 = scp.section(3)
+    assert s3
+    assert s3.p.section_has_data()
+    assert 12 == s3.nrleads
 
 def read_scp():
     fr = FileReader('example/example.scp')
