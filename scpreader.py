@@ -119,7 +119,8 @@ class ScpReader:
         h = self._sectionheader()
         s = Section0(h)
         s.p = []
-        # fix pointers for 12 sections (0-11)
+        
+        # fixed pointers for 12 sections (0-11)
         for _ in range(0, 12):
             pointer = self._sectionpointer()
             s.p.append(pointer)
@@ -227,6 +228,15 @@ class ScpReader:
             s.leads.append(lead)
         return s
 
+    def _section4(self, pointer):
+        """Read section 4"""
+        self.reader.move(pointer.index - 1)
+
+        header = self._sectionheader()
+        s = Section4(header, pointer)
+
+        return s
+        
     def _section5(self, pointer, nr_of_leads):
         """Read section 5"""
         self.reader.move(pointer.index - 1)
@@ -269,6 +279,7 @@ class ScpReader:
         s.sample_time_interval = self.reader.readint(2)
         s.sample_encoding = self.reader.readint(1)
         s.bimodal_compression = self.reader.readint(1)
+        
 
         # nr of bytes for each lead
         for _ in range(0, nr_of_leads):
@@ -297,14 +308,6 @@ class ScpReader:
 
         return s
 
-    def _section4(self, pointer):
-        """Read section 4"""
-        self.reader.move(pointer.index - 1)
-
-        header = self._sectionheader()
-        s = Section4(header, pointer)
-
-        return s
 
     def _section8(self, pointer):
         """Read section 8"""
@@ -324,14 +327,6 @@ class ScpReader:
 
         return s
 
-    def _section9(self, pointer):
-        """Read section 9"""
-        self.reader.move(pointer.index - 1)
-
-        header = self._sectionheader()
-        s = Section9(header, pointer)
-
-        return s
         
     def _section10(self, pointer):
         """Read section 10"""
