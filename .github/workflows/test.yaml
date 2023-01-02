@@ -1,9 +1,9 @@
-name: Python package
+name: Python test
 
 on: [push]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -29,6 +29,12 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: pytest
+
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Docker Linter
         uses: hadolint/hadolint-action@v3.0.0
         with:
