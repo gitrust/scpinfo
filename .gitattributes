@@ -1,59 +1,33 @@
-*		text=auto
+*		        text=auto
 
 # batch files
 
-*.sh		text eol=lf
-*.bat		text eol=crlf
+*.sh		    text eol=lf
+*.bat		    text eol=crlf
 
 # sensible defaults taken from https://github.com/alexkaratarakis/gitattributes
 
 # Documents
 
-*.doc		binary
-*.DOC		binary
-*.docx		binary
-*.DOCX		binary
-*.dot		binary
-*.DOT		binary
-*.pdf		binary
-*.PDF		binary
-*.rtf		binary
-*.RTF		binary
-*.md		text
-*.adoc		text
-*.textile	text
-*.mustache	text
-*.csv		text
-*.tab		text
-*.tsv		text
-*.sql		text
+*.md		    text
+*.adoc		  text
+*.csv		    text
 *.py        text
+Makefile    text  eol=lf
+Dockerfile  text eol=lf
 
 # Graphics
 
-*.png		binary
-*.jpg		binary
-*.jpeg		binary
-*.gif		binary
-*.tif		binary
-*.tiff		binary
-*.ico		binary
-*.svg		binary
-*.eps		binary
+*.png		    binary
+*.jpg		    binary
+*.jpeg		  binary
+*.gif		    binary
 
 # Program files / Libraries
 
-*.css		text
-*.df		text
-*.htm		text
-*.html		text
-*.java		text
-*.js		text
-*.json		text
-*.jsp		text
-*.jspf		text
+*.json		  text
 *.properties	text
-*.tld		text
-*.txt		text
-*.xml		text
+*.tld		    text
+*.txt		    text
+*.xml		    text
 
