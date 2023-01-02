@@ -31,6 +31,22 @@ optional arguments:
                     a section id
 ```
 
+# Docker
+
+There is a python based Docker image `gitrust/scpinfo` to run scpinfo.
+
+Run examples 
+
+```
+docker run --rm -it -v $(pwd):/home/docker   gitrust/scpinfo example.scp
+
+docker run --rm -it -v $(pwd):/home/docker   gitrust/scpinfo --csv 5 example.scp
+
+```
+
+On Windows OS use `%cd%` instead of `$(pwd)` for volume binding.
+
+
 # Example usage
 
 ```
