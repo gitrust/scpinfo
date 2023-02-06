@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 class ScpRecord:
     """Container for all SCP sections"""
     def __init__(self):
@@ -50,8 +51,6 @@ class Section():
     def __init__(self, scpHeader):
         self.h = scpHeader
 
-# 16
-
 
 class SectionHeader:
     """A section header for each section"""
@@ -100,13 +99,8 @@ class Section0(Section):
         return None
 
 
-
-
-# in section3
-
-
 class LeadIdentification:
-    """LeadIdenticitation with information about sample count"""
+    """LeadIdenticitation with information about sample count (Section 3)"""
     def __init__(self):
         self.startsample = 0
         self.endsample = 0
@@ -118,8 +112,6 @@ class LeadIdentification:
     def sample_count(self):
         """Return number of samples for this LeadId"""
         return self.endsample - self.startsample + 1
-
-
 
 
 class DataSamples:
@@ -139,12 +131,14 @@ class Section1(Section):
         self.tags = []
         self.datalen = 0
 
+
 class Section2(Section):
     """Section 2 - Huffman tables used in encoding of Ecg data"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
-        
+
+
 class Section3(Section):
     """Section 3 - ECG Leads definition"""
     def __init__(self, header, pointer):
@@ -164,7 +158,8 @@ class Section4(Section):
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
-        
+
+
 class Section5(Section):
     """Section 5 with samples"""
     def __init__(self, header, pointer):
@@ -218,11 +213,13 @@ class Section8(Section):
         super().__init__(header)
         self.p = pointer
 
+
 class Section9(Section):
     """Section 9 - Manufacturer Specific diagnostic and overreading data"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
+
 
 class Section10(Section):
     """Section 10 - per Lead ECG Measurements"""
@@ -230,11 +227,13 @@ class Section10(Section):
         super().__init__(header)
         self.p = pointer
 
+
 class Section11(Section):
     """Section 11 - Universal Statement Codes resulting from the interpretation"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
+
 
 class Section12(Section):
     """Section 12 - Long-Term ECG Rythm data"""
