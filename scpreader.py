@@ -206,6 +206,10 @@ class ScpReader:
 
         header = self._sectionheader()
         s = Section2(header, pointer)
+
+        s.nr_huffman_tables = self.reader.readint(2)
+        # Number of code structures in table # 1
+        s.nr_code_struct = self.reader.readint(2)
         return s
 
     def _section3(self, pointer):
@@ -234,6 +238,10 @@ class ScpReader:
 
         header = self._sectionheader()
         s = Section4(header, pointer)
+
+        s.ref_beat_type_len = self.reader.readint(2)
+        s.sample_nr_fidpoint = self.reader.readint(2)
+        s.total_nr_qrs = self.reader.readint(2)
 
         return s
 
@@ -305,6 +313,8 @@ class ScpReader:
 
         header = self._sectionheader()
         s = Section7(header, pointer)
+
+        s.reference_count = self.reader.readint(1)
 
         return s
 
