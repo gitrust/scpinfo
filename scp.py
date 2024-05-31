@@ -223,8 +223,12 @@ class Section7(Section):
         self.p = pointer
 
         self.reference_count = 0
+        # number of pacemaker spikes
         self.pace_count = 0
+        # Average RR interval in milliseconds for all QRS's
         self.rr_interval = 0
+        # Average PP interval in milliseconds for all QRS's
+        self.pp_interval = 0
         self.pace_times = []
         self.pace_amplitudes = []
         self.pace_types = []

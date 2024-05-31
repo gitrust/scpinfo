@@ -315,6 +315,18 @@ class ScpReader:
         s = Section7(header, pointer)
 
         s.reference_count = self.reader.readint(1)
+        s.pace_count = self.reader.readint(1)
+        s.rr_interval = self.reader.readint(2)
+        s.pp_interval = self.reader.readint(2)
+        for i in range(0, s.pace_count):
+            s.pace_times[i] = self.reader.readint(2)
+            s.pace_amplitudes[i] = self.reader.readint(2)
+        
+        for i in range(0, s.pace_count):
+            s.pace_types = self.reader.readint(1)
+            s.pace_sources = self.reader.readint(1)
+            s.pace_indexes = self.reader.readint(2)
+            s.pace_widths = self.reader.readint(2)
 
         return s
 
