@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import struct
 
 def b2s(bytes):
     if len(bytes) != 2:

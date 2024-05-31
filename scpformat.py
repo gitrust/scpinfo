@@ -5,7 +5,7 @@
     SCP section and attribute formatter
 """
 
-from scputil import b2i, b2s, bdecode, lead_dic
+from scputil import b2i, b2s, b2b, bdecode, lead_dic
 
 
 class Section1TagsFormatter:
