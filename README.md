@@ -33,7 +33,7 @@ optional arguments:
 
 # Docker
 
-There is a python based Docker image `gitrust/scpinfo` to run scpinfo.
+There is a python based Docker image [gitrust/scpinfo](https://hub.docker.com/r/gitrust/scpinfo) to run scpinfo.
 
 Run examples 
 
