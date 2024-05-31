@@ -5,7 +5,7 @@
     SCP section and attribute formatter
 """
 
-from scputil import b2i, bdecode, lead_dic
+from scputil import b2i, b2s, bdecode, lead_dic
 
 
 class Section1TagsFormatter:
@@ -129,7 +129,7 @@ class DateTimeZoneFormatter:
         self._print = False
         if bytes:
             # in minutes
-            self.offset = b2i(bytes[0:2])
+            self.offset = b2s(bytes[0:2])
             self.index = b2i(bytes[2:4])
             self.desc = bdecode(bytes[4:])
             self._print = True
@@ -402,6 +402,7 @@ def format_section2(s2, printer):
     print()
     printer.p('--Section2--', '----')
     format_header(s2.h, printer)
+    printer.p('NrHuffmanTables', '19999 (default table)' if s2.nr_huffman_tables == 19999 else s2.nr_huffman_tables)
 
 
 def format_section3(s3, printer):
@@ -415,7 +416,6 @@ def format_section3(s3, printer):
     printer.p('Sim-rec Leads', s3.nr_leads_sim)
     printer.p('LeadCount', len(s3.leads))
     LeadIdFormatter(s3.leads).format(printer)
-
 
 def format_section5(s5, printer):
     if not s5.p.section_has_data():
@@ -495,15 +495,22 @@ def format_section7(s7, printer):
     print()
     printer.p('--Section7--', '----')
     format_header(s7.h, printer)
+    printer.p('ReferenceCount', s7.reference_count)
+    printer.p('PaceCount', s7.pace_count)
+    printer.p('Avg RR Interval (ms)', "29999 (not calculated)" if 29999 == s7.rr_interval else s7.rr_interval )
+    printer.p('Avg PP Interval (ms)', "29999 (not calculated)" if 29999 == s7.pp_interval else s7.pp_interval)
 
 
-def format_section4(s4, printer):
-    if not s4.p.section_has_data():
+def format_section4(s, printer):
+    if not s.p.section_has_data():
         return
-
+    
     print()
     printer.p('--Section4--', '----')
-    format_header(s4.h, printer)
+    format_header(s.h, printer)
+    printer.p('RefBeatType0Len', s.ref_beat_type_len)
+    printer.p('SampleNr FiducialPoint', s.sample_nr_fidpoint)
+    printer.p('TotalNrQRS', s.total_nr_qrs)
 
 
 def format_section8(s8, printer):

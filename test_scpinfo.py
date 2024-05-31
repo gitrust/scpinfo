@@ -75,9 +75,10 @@ def test_section1_tags():
 def test_section2():
     scp = read_scp()
 
-    s2 = scp.section(2)
-    assert s2.p
-    assert s2.p.section_has_data()
+    s = scp.section(2)
+    assert s.p.section_has_data()
+    assert s.h.crc == 22179
+    assert 19999 == s.nr_huffman_tables, "Section 2 (Nr of Huffman tables) should be 19999"
 
 def test_section3():
     scp = read_scp()
@@ -85,7 +86,33 @@ def test_section3():
     s3 = scp.section(3)
     assert s3
     assert s3.p.section_has_data()
+    assert s3.h.crc == 45638
     assert 12 == s3.nrleads
+
+def test_section4():
+    scp = read_scp()
+
+    s = scp.section(4)
+    assert s.h.crc == 4777
+    assert s.ref_beat_type_len == 1198
+
+def test_section6():
+    scp = read_scp()
+
+    s = scp.section(6)
+    assert s.h.crc == 61490
+    assert s.h.len == 30084
+    assert s.avm == 2500
+    assert s.sample_time_interval == 2000
+    assert len(s.nr_bytes_for_leads) == 12
+
+def test_section7():
+    scp = read_scp()
+
+    s = scp.section(7)
+    assert s.h.crc == 26535
+    assert s.h.len == 242
+    assert s.reference_count == 13
 
 def read_scp():
     fr = FileReader('example/example.scp')
