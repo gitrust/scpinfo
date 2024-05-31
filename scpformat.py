@@ -129,7 +129,7 @@ class DateTimeZoneFormatter:
         self._print = False
         if bytes:
             # in minutes
-            self.offset = b2i(bytes[0:2])
+            self.offset = b2s(bytes[0:2])
             self.index = b2i(bytes[2:4])
             self.desc = bdecode(bytes[4:])
             self._print = True
@@ -153,7 +153,7 @@ class PatientRaceFormatter:
 
         # 1 byte
         if bytes:
-            value = b2i(bytes)
+            value = b2b(bytes)
             self.text = self.lookup[value]
         else:
             self.text = ''
