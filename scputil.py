@@ -2,11 +2,23 @@
 # -*- coding: utf-8 -*-
 
 
+def b2s(bytes):
+    if len(bytes) != 2:
+        raise ValueError("bytes must be exactly 2 bytes long")
+    return struct.unpack('h', bytes)
+
+def b2b(bytes):
+    if len(bytes) != 1:
+        raise ValueError("bytes must be exactly 1 byte long")
+    return struct.unpack('B', bytes)
 
 def b2i(bytes):
-    """Convert bytes to int (little endian)"""
+    """Convert bytes to unsigned integer (little endian)"""
     return int.from_bytes(bytes, 'little')
 
+def b2si(bytes):
+    """Convert bytes to signed integer (little endian)"""
+    return int.from_bytes(bytes, 'little', signed=True)
 
 def bdecode(bytes):
     """Decode bytes as iso-8859-1 and remove null terminators"""
