@@ -144,6 +144,11 @@ class Section2(Section):
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
+        # Number of Huffman Tables defined (if 19 999 then the default table, defined in C.3.7.6, is used).
+        self.nr_huffman_tables = 0
+        # Number of code structures in table # 1
+        self.nr_code_struct = 0
+
         
 class Section3(Section):
     """Section 3 - ECG Leads definition"""
@@ -158,12 +163,18 @@ class Section3(Section):
         self.nr_leads_sim = 0
         self.leads = []
 
-
+# QRS Locations if reference beats are encoded
 class Section4(Section):
-    """Section 4 - Reserved for legacy SCP-ECG versions"""
+    """Section 4 - Reserved for legacy SCP-ECG versions (SCP Versions 1.x, 2.x)"""
     def __init__(self, header, pointer):
         super().__init__(header)
         self.p = pointer
+        # Length of reference beat type 0 in milliseconds
+        self.ref_beat_type_len = 0
+        # Sample number of the fiducial point (QRS trigger point), with respect to beginning of reference beat type 0
+        self.sample_nr_fidpoint = 0
+        # Total number of QRS complexes within the entire short-term ECG rhythm record
+        self.total_nr_qrs = 0
         
 class Section5(Section):
     """Section 5 with samples"""
@@ -211,6 +222,15 @@ class Section7(Section):
         super().__init__(header)
         self.p = pointer
 
+        self.reference_count = 0
+        self.pace_count = 0
+        self.rr_interval = 0
+        self.pace_times = []
+        self.pace_amplitudes = []
+        self.pace_types = []
+        self.pace_sources = []
+        self.pace_indexes = []
+        self.pace_widths = []
 
 class Section8(Section):
     """Section 8 - Textual diagnosis"""
