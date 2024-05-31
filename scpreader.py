@@ -40,6 +40,34 @@ class FileReader:
             return int(value)
         return int.from_bytes(bytes, 'little')
 
+    def read_byte(self):
+        """Read 1 byte (little endian)"""
+        bytes = self.file.read(1)
+        if len(bytes) == 0:
+            print('ERR: Could not read_byte, corrupt structure. File position ' + self.pos())
+        return struct.unpack("<B", bytes)[0]
+
+    def read_ushort(self):
+        """Read 2 bytes as unsigned short (little endian)"""
+        bytes = self.file.read(2)
+        if len(bytes) == 0:
+            print('ERR: Could not read_ushort, corrupt structure. File position ' + self.pos())
+        return struct.unpack("<H", bytes)[0]
+
+    def read_uint(self):
+        """Read 4 bytes as unsigned integer (little endian)"""
+        bytes = self.file.read(4)
+        if len(bytes) == 0:
+            print('ERR: Could not read_uint, corrupt structure. File position ' + self.pos())
+        return struct.unpack("<I", bytes)[0]
+
+    def read_ulong(self):
+        """Read 6 bytes as unsigned long (little endian)"""
+        bytes = self.file.read(6)
+        if len(bytes) == 0:
+            print('ERR: Could not read_ulong, corrupt structure. File position ' + self.pos())
+        return struct.unpack("<Q", bytes)[0]
+
     def move(self, n):
         """move n bytes from beginning of file"""
         return self.file.seek(n, 0)
@@ -68,8 +96,8 @@ class ScpReader:
     def read_scp(self):
         """Read an scp file into memory and returns a ScpRecord"""
         scpRecord = ScpRecord()
-        scpRecord.crc = self.reader.readint(2)
-        scpRecord.len = self.reader.readint(4)
+        scpRecord.crc = self.reader.read_ushort()
+        scpRecord.len = self.reader.read_uint()
 
         s0 = self._section0()
         scpRecord.sections.append(s0)
@@ -93,9 +121,9 @@ class ScpReader:
     def _sectionheader(self):
         """Read and return a section header"""
         header = SectionHeader()
-        header.crc = self.reader.readint(2)
-        header.id = self.reader.readint(2)
-        header.len = self.reader.readint(4)
+        header.crc = self.reader.read_ushort()
+        header.id = self.reader.read_ushort()
+        header.len = self.reader.read_uint()
         header.versnr = self.reader.readint(1)
         header.protnr = self.reader.readint(1)
         header.reserved = self.reader.reads(6)
@@ -107,11 +135,11 @@ class ScpReader:
     def _sectionpointer(self):
         """Read and return a section pointer"""
         p = SectionPointer()
-        p.id = self.reader.readint(2)
+        p.id = self.reader.read_ushort()
         # section length
-        p.len = self.reader.readint(4)
+        p.len = self.reader.read_uint()
         # index of section starting from zero
-        p.index = self.reader.readint(4)
+        p.index = self.reader.read_uint()
         return p
 
     def _section0(self):
@@ -139,8 +167,8 @@ class ScpReader:
     def _readtag(self):
         """Read and return a scp tag"""
         tag = Tag()
-        tag.tag = self.reader.readint(1)
-        tag.len = self.reader.readint(2)
+        tag.tag = self.reader.read_byte()
+        tag.len = self.reader.read_ushort()
 
         if tag.len > 0:
             tag.data = self.reader.read(tag.len)
@@ -149,9 +177,9 @@ class ScpReader:
     def _readleadid(self):
         """Read and return a LeadId"""
         leadid = LeadIdentification()
-        leadid.startsample = self.reader.readint(4)
-        leadid.endsample = self.reader.readint(4)
-        leadid.leadid = self.reader.readint(1)
+        leadid.startsample = self.reader.read_uint()
+        leadid.endsample = self.reader.read_uint()
+        leadid.leadid = self.reader.read_byte()
         return leadid
 
     def _read_section(self, pointer, nr_of_leads):
@@ -207,9 +235,9 @@ class ScpReader:
         header = self._sectionheader()
         s = Section2(header, pointer)
 
-        s.nr_huffman_tables = self.reader.readint(2)
+        s.nr_huffman_tables = self.reader.read_ushort()
         # Number of code structures in table # 1
-        s.nr_code_struct = self.reader.readint(2)
+        s.nr_code_struct = self.reader.read_ushort()
         return s
 
     def _section3(self, pointer):
@@ -219,8 +247,8 @@ class ScpReader:
         header = self._sectionheader()
         s = Section3(header, pointer)
 
-        s.nrleads = self.reader.readint(1)
-        s.flags = self.reader.readint(1)
+        s.nrleads = self.reader.read_byte()
+        s.flags = self.reader.read_byte()
         # first bit
         s.ref_beat_substr = bool(s.flags >> 1 & 1)
         # bits 3-7
@@ -239,9 +267,9 @@ class ScpReader:
         header = self._sectionheader()
         s = Section4(header, pointer)
 
-        s.ref_beat_type_len = self.reader.readint(2)
-        s.sample_nr_fidpoint = self.reader.readint(2)
-        s.total_nr_qrs = self.reader.readint(2)
+        s.ref_beat_type_len = self.reader.read_ushort()
+        s.sample_nr_fidpoint = self.reader.read_ushort()
+        s.total_nr_qrs = self.reader.read_ushort()
 
         return s
 
@@ -252,14 +280,14 @@ class ScpReader:
         header = self._sectionheader()
         s = Section5(header, pointer)
 
-        s.avm = self.reader.readint(2)
-        s.sample_time_interval = self.reader.readint(2)
-        s.sample_encoding = self.reader.readint(1)
-        s.reserved = self.reader.readint(1)
+        s.avm = self.reader.read_ushort()
+        s.sample_time_interval = self.reader.read_ushort()
+        s.sample_encoding = self.reader.read_byte()
+        s.reserved = self.reader.read_byte()
 
         # nr of bytes for each lead
         for _ in range(0, nr_of_leads):
-            s.nr_bytes_for_leads.append(self.reader.readint(2))
+            s.nr_bytes_for_leads.append(self.reader.read_ushort())
 
         # samples for each lead
         for nr in s.nr_bytes_for_leads:
@@ -269,7 +297,7 @@ class ScpReader:
             samples_len = nr / 2
 
             while samples_len > 0:
-                data.samples.append(self.reader.readint(2))
+                data.samples.append(self.reader.read_ushort())
                 samples_len = samples_len - 1
 
             s.data.append(data)
@@ -283,16 +311,18 @@ class ScpReader:
         header = self._sectionheader()
         s = Section6(header, pointer)
 
-        s.avm = self.reader.readint(2)
-        s.sample_time_interval = self.reader.readint(2)
-        s.sample_encoding = self.reader.readint(1)
-        s.bimodal_compression = self.reader.readint(1)
+        s.avm = self.reader.read_ushort()
+        s.sample_time_interval = self.reader.read_ushort()
+        s.sample_encoding = self.reader.read_byte()
+        s.bimodal_compression = self.reader.read_byte()
 
 
         # nr of bytes for each lead
         for _ in range(0, nr_of_leads):
-            s.nr_bytes_for_leads.append(self.reader.readint(2))
+            s.nr_bytes_for_leads.append(self.reader.read_ushort())
 
+        # TODO: check if section2 exists -> samples are Huffman encoded
+        
         # samples for each lead
         for nr in s.nr_bytes_for_leads:
             data = DataSamples()
@@ -301,6 +331,7 @@ class ScpReader:
             samples_len = nr / 2
 
             while samples_len > 0:
+                # signed 2byte integers
                 data.samples.append(self.reader.readint(2))
                 samples_len = samples_len - 1
 
@@ -314,17 +345,17 @@ class ScpReader:
         header = self._sectionheader()
         s = Section7(header, pointer)
 
-        s.reference_count = self.reader.readint(1)
-        s.pace_count = self.reader.readint(1)
-        s.rr_interval = self.reader.readint(2)
-        s.pp_interval = self.reader.readint(2)
+        s.reference_count = self.reader.read_byte()
+        s.pace_count = self.reader.read_byte()
+        s.rr_interval = self.reader.read_ushort()
+        s.pp_interval = self.reader.read_ushort()
         for i in range(0, s.pace_count):
             s.pace_times[i] = self.reader.readint(2)
-            s.pace_amplitudes[i] = self.reader.readint(2)
+            s.pace_amplitudes[i] = self.reader.read_ushort()
         
         for i in range(0, s.pace_count):
-            s.pace_types = self.reader.readint(1)
-            s.pace_sources = self.reader.readint(1)
+            s.pace_types = self.reader.read_byte()
+            s.pace_sources = self.reader.read_byte()
             s.pace_indexes = self.reader.readint(2)
             s.pace_widths = self.reader.readint(2)
 
