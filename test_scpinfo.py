@@ -86,7 +86,7 @@ def test_section3():
     s3 = scp.section(3)
     assert s3
     assert s3.p.section_has_data()
-    assert s3.h.crc == -19898
+    assert s3.h.crc == 45638
     assert 12 == s3.nrleads
 
 def test_section4():
