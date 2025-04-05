@@ -42,6 +42,9 @@ docker run --rm -it -v $(pwd):/home/docker   gitrust/scpinfo example.scp
 
 docker run --rm -it -v $(pwd):/home/docker   gitrust/scpinfo --csv 5 example.scp
 
+# under Windows
+docker run --rm -it -v %cd%:/home/docker   gitrust/scpinfo example.scp
+
 ```
 
 On Windows OS use `%cd%` instead of `$(pwd)` for volume binding.
