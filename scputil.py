@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import struct
+from leadtable import lead_table
 
 def b2s(bytes):
     if len(bytes) != 2:
@@ -29,7 +30,13 @@ def bdecode(bytes):
 
 def lead_dic():
     """Return lead dictionary from file"""
-    return file2dict('leadtable.csv')
+    data_dict = {}
+    lines = lead_table.split('\n')
+    for line in lines:
+        if line:
+            key, value = line.split(',')
+            data_dict[int(key)] = value
+    return data_dict
 
 
 def file2dict(file):
