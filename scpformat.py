@@ -14,7 +14,7 @@ class Section1TagsFormatter:
 
     def format_tag_int(self, tag, start, end):
         for _tag in self.tags:
-            if _tag.tag == tag:
+            if _tag.tag == tag and _tag.data is not None:
                 return b2i(_tag.data[start:end])
         return ''
 
@@ -28,7 +28,7 @@ class Section1TagsFormatter:
     def format_tag(self, tag):
         """Format given tag"""
         for _tag in self.tags:
-            if _tag.tag == tag:
+            if _tag.tag == tag and _tag.data is not None:
                 return bdecode(_tag.data)
         return ''
 
@@ -81,12 +81,14 @@ class Section1TagsFormatter:
         printer.p('LowPass Filter', self.format_tag_int(28, 0, 2))
         FilterBitMapFormatter(self.tag_data(29)).format(printer)
         for t in self.tag_list(30):
-            printer.p('Text', bdecode(t.data))
+            if t.data is not None:
+                printer.p('Text', bdecode(t.data))
         printer.p('Ecg Seq.', self.format_tag(31))
         ElectrodeConfigFormatter(self.tag_data(33)).format(printer)
         DateTimeZoneFormatter(self.tag_data(34)).format(printer)
         for t in self.tag_list(35):
-            printer.p('Med. History', bdecode(t.data))
+            if t.data is not None:
+                printer.p('Med. History', bdecode(t.data))
 
 
 # Lead Format
@@ -337,17 +339,23 @@ class TagMachineId:
             self.devId = b2i(bytes[4:4])
             self.devType = b2i(bytes[6:6])
             self.model = bdecode(bytes[9:14])
+        else:
+            self.instNr = ''
+            self.depNr = ''
+            self.devId = ''
+            self.devType = ''
+            self.model = ''
 
     def __str__(self):
         return '--'
 
     def format(self, printer):
         printer.p('Acq. Device MachineID', '----')
-        printer.p('InstNr', self.instNr)
-        printer.p('DepNr', self.depNr)
-        printer.p('DevId', self.devId)
-        printer.p('DevType', self.devType)
-        printer.p('Model', self.model)
+        printer.p('InstNr', self.instNr or '<missing>')
+        printer.p('DepNr', self.depNr or '<missing>')
+        printer.p('DevId', self.devId or '<missing>')
+        printer.p('DevType', self.devType or '<missing>')
+        printer.p('Model', self.model or '<missing>')
         printer.p('', '----')
 
 
@@ -378,7 +386,7 @@ def format_section0(s0, printer):
     # section 0
     printer.p('--Section0--', '----')
     format_header(s0.h, printer)
-    
+
     printer.p('Pointer Count', len(s0.p))
     printer.p('Pointers', ', '.join(str(p) for p in s0.p))
 
@@ -504,7 +512,7 @@ def format_section7(s7, printer):
 def format_section4(s, printer):
     if not s.p.section_has_data():
         return
-    
+
     print()
     printer.p('--Section4--', '----')
     format_header(s.h, printer)
@@ -528,7 +536,7 @@ def format_section_default(s, section_id, printer):
     print()
     printer.p('--Section' + str(section_id) + '--', '----')
     format_header(s.h, printer)
-    
+
 def format_header(h, printer):
     printer.p('--Header--', '----')
     printer.p('CRC', h.crc)
